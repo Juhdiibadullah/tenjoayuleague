@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+<base target="_top">
+<meta charset="utf-8">
+<style>
+  :root { --bg:#07111f; --card:#0c1b2c; --line:#17324a; --txt:#e8f0f7; --mut:#8ca3b8; --acc:#22c55e; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:system-ui,sans-serif; background:radial-gradient(circle at 50% 0,#0b3b1f 0,var(--bg) 50%); color:var(--txt); min-height:100vh; padding:20px 14px; }
+  .box { max-width:520px; margin:auto; background:var(--card); border:1px solid var(--line); border-radius:14px; padding:22px; animation:masuk .5s ease; }
+  @keyframes masuk { from { opacity:0; transform:translateY(24px); } }
+  h1 { margin:0 0 4px; font-size:22px; } h1 span { color:var(--acc); font-style:italic; }
+  .mut { color:var(--mut); font-size:13px; }
+  label { display:block; margin-top:14px; font-size:14px; }
+  label small { color:var(--mut); }
+  input { width:100%; margin-top:5px; padding:10px; background:var(--bg); color:var(--txt); border:1px solid var(--line); border-radius:8px; font:inherit; }
+  input:focus { outline:2px solid var(--acc); border-color:transparent; }
+  input[type=color] { width:70px; height:42px; padding:3px; }
+  .logo { display:flex; align-items:center; gap:12px; margin-top:6px; }
+  .pv { width:64px; height:64px; border-radius:50%; background:#2563eb; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:22px; color:#fff; object-fit:cover; border:3px solid rgba(255,255,255,.25); }
+  button { position:relative; overflow:hidden; width:100%; margin-top:20px; background:var(--acc); color:#052e16; border:0; border-radius:10px; padding:13px; font-size:16px; font-weight:700; cursor:pointer; transition:transform .12s; }
+  button:active { transform:scale(.96); }
+  button:disabled { filter:grayscale(.6); cursor:wait; }
+  #msg { margin-top:14px; font-size:14px; min-height:20px; } .err { color:#fca5a5; }
+  .sukses { text-align:center; padding:20px 0; } .sukses .ic { font-size:56px; }
+  .hp { position:absolute; left:-9999px; }
+</style>
+</head>
+<body>
+<div class="box" id="box">
+  <h1>Daftar klub <span>Liga Desa Tenjoayu</span></h1>
+  <p class="mut">Isi data klub kamu. Panitia akan memeriksa dan mengabari lewat WhatsApp.</p>
+  <label>Nama klub<input id="nama" maxlength="40" placeholder="Contoh: Harapan Jaya FC"></label>
+  <label>Nama perwakilan<input id="kontak" maxlength="40" placeholder="Nama ketua atau manajer"></label>
+  <label>Nomor WhatsApp<input id="wa" type="tel" inputmode="tel" placeholder="08123456789"></label>
+  <label>Kota atau dusun <small>(opsional)</small><input id="kota" maxlength="40"></label>
+  <label>Tahun berdiri <small>(opsional)</small><input id="berdiri" type="number" min="1900" max="2100"></label>
+  <label>Stadion atau lapangan asal <small>(opsional)</small><input id="stadion" maxlength="40"></label>
+  <label>Warna klub<br><input id="warna" type="color" value="#2563eb" oninput="pv()"></label>
+  <label>Logo <small>(opsional, otomatis diperkecil)</small>
+    <div class="logo"><span id="pv" class="pv">?</span><input type="file" accept=".png,.jpg,.jpeg,.webp,.gif" onchange="pilihLogo(this)"></div></label>
+  <input class="hp" id="web" tabindex="-1" autocomplete="off" aria-hidden="true">
+  <button id="kirim" onclick="kirim()">Kirim pendaftaran</button>
+  <div id="msg"></div>
+</div>
+<script>
+let logo = '';
+const v = id => document.getElementById(id).value.trim();
+function pv() {
+  const e = document.getElementById('pv');
+  if (logo) { e.outerHTML = `<img id="pv" class="pv" src="${logo}" alt="">`; return; }
+  e.style.background = v('warna') || '#2563eb';
+  e.textContent = (v('nama').split(' ').map(w => w[0]).join('').slice(0, 2) || '?').toUpperCase();
+}
+document.getElementById('nama').addEventListener('input', pv);
+function galat(t) { const m = document.getElementById('msg'); m.className = 'err'; m.textContent = t; }
+
+function pilihLogo(inp) {
+  const f = inp.files[0];
+  if (!f) return;
+  if (!f.type.startsWith('image/')) return galat('File harus berupa gambar');
+  const r = new FileReader();
+  r.onload = () => {
+    const img = new Image();
+    img.onload = () => {
+      const S = 160, c = document.createElement('canvas');
+      c.width = c.height = S;
+      const m = Math.min(img.width, img.height);
+      c.getContext('2d').drawImage(img, (img.width - m) / 2, (img.height - m) / 2, m, m, 0, 0, S, S);
+      let d = c.toDataURL('image/webp', 0.85);
+      if (d.indexOf('data:image/webp') !== 0) d = c.toDataURL('image/png');
+      if (d.length > 45000) d = c.toDataURL('image/jpeg', 0.7);
+      if (d.length > 45000) return galat('Gambar terlalu besar. Pilih gambar lain.');
+      logo = d; document.getElementById('msg').textContent = ''; pv();
+    };
+    img.onerror = () => galat('Gambar tidak bisa dibaca');
+    img.src = r.result;
+  };
+  r.readAsDataURL(f);
+}
+
+function kirim() {
+  if (document.getElementById('web').value) return; // jebakan spam
+  if (!v('nama')) return galat('Isi nama klub');
+  if (!v('kontak')) return galat('Isi nama perwakilan');
+  if (!/^[0-9+\- ]{8,16}$/.test(v('wa'))) return galat('Nomor WhatsApp tidak valid');
+  const b = document.getElementById('kirim');
+  b.disabled = true; b.textContent = 'Mengirim...';
+  document.getElementById('msg').textContent = '';
+  google.script.run
+    .withSuccessHandler(() => {
+      document.getElementById('box').innerHTML = `<div class="sukses"><div class="ic">&#9989;</div><h1>Pendaftaran terkirim</h1>
+        <p class="mut">Terima kasih, ${v('nama') ? '' : ''}panitia akan menghubungi perwakilan klub lewat WhatsApp.</p></div>`;
+    })
+    .withFailureHandler(e => { b.disabled = false; b.textContent = 'Kirim pendaftaran'; galat((e && e.message ? e.message : e).replace(/^Error: /, '')); })
+    .daftarKlub({ nama: v('nama'), kontak: v('kontak'), wa: v('wa'), kota: v('kota'), berdiri: v('berdiri'), stadion: v('stadion'), warna: v('warna'), logo: logo });
+}
+</script>
+</body>
+</html>

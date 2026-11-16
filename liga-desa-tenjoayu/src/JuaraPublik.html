@@ -1,0 +1,79 @@
+<script>
+/* JuaraPublik — tab "Juara" (Hall of Fame) di halaman publik. Memanggil daftarMusim() dari Musim.gs.
+   Letakkan SETELAH include PublikPanel. Tidak aktif di ?page=Admin. */
+(function () {
+  if (typeof ADMIN_PAGE !== 'undefined' && ADMIN_PAGE) return;
+  var MUSIM = null, SEDANG = false;
+
+  var st = document.createElement('style');
+  st.textContent = '.jr{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center}'
+    + '.jr .logo{width:84px;height:84px;font-size:28px}'
+    + '.jr h3{margin:2px 0 4px;font-size:20px}.jr .gelar{color:#ffd166;font-weight:800;font-size:12px;letter-spacing:1px}'
+    + '.jstat{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;font-size:12px}.jstat span b{color:var(--acc);font-size:15px}'
+    + 'details.jd{margin-top:12px;border-top:1px solid var(--line);padding-top:8px}details.jd summary{cursor:pointer;color:var(--acc);font-weight:700;font-size:13px}'
+    + '@media(max-width:720px){.jr .logo{width:60px;height:60px;font-size:20px}.jr h3{font-size:16px}}';
+  document.head.appendChild(st);
+
+  NAV_ICONS.juara = '<svg viewBox="0 0 24 24"><path d="M7 4h10v5a5 5 0 0 1-10 0Z"/><path d="M7 6H4v2a4 4 0 0 0 4 4m9-6h3v2a4 4 0 0 1-4 4M12 14v5m-4 2h8m-7-2h6"/></svg>';
+  TABS.push(['juara', '&#127942;', 'Juara']);
+
+  function muat() {
+    if (SEDANG) return;
+    SEDANG = true;
+    google.script.run
+      .withSuccessHandler(function (r) { MUSIM = r || []; SEDANG = false; if (tab === 'juara') render(); })
+      .withFailureHandler(function (e) { MUSIM = MUSIM || []; SEDANG = false; gagal(e); if (tab === 'juara') render(); })
+      .daftarMusim();
+  }
+
+  function detail(x) {
+    var d = x.data || {}, h = '';
+    if (d.kl) h += Object.keys(d.kl).sort().map(function (g) {
+      return '<h2>' + (x.mode === 'liga' ? 'Klasemen Akhir' : 'Grup ' + esc(g)) + '</h2><table><tr><th>#</th><th>Klub</th><th>M</th><th>Mn</th><th>S</th><th>K</th><th>GM</th><th>GK</th><th>Poin</th></tr>'
+        + d.kl[g].map(function (r, i) { return '<tr><td>' + (i + 1) + '</td><td>' + esc(r[0]) + '</td><td>' + r[1] + '</td><td>' + r[2] + '</td><td>' + r[3] + '</td><td>' + r[4] + '</td><td>' + r[5] + '</td><td>' + r[6] + '</td><td class="pts">' + r[7] + '</td></tr>'; }).join('') + '</table>';
+    }).join('');
+    if (d.ts && d.ts.length) h += '<h2>Top Skor</h2><table><tr><th>#</th><th>Pemain</th><th>Klub</th><th>Gol</th></tr>'
+      + d.ts.map(function (r, i) { return '<tr><td>' + (i + 1) + '</td><td>' + esc(r[0]) + '</td><td>' + esc(r[1]) + '</td><td class="pts">' + r[2] + '</td></tr>'; }).join('') + '</table>';
+    if (d.kuning !== undefined) h += '<p class="mut">Kartu kuning: ' + d.kuning + ' &middot; Kartu merah: ' + (d.merah || 0) + '</p>';
+    if (d.hasil && d.hasil.length) h += '<h2>Semua Hasil</h2>' + d.hasil.map(function (r) {
+      return '<div class="info"><span class="dot"></span>' + esc(r[2]) + ' ' + r[3] + ' - ' + r[4] + ' ' + esc(r[5]) + '<em>' + esc(r[0]) + ' &middot; ' + esc(r[1]) + '</em></div>';
+    }).join('');
+    return h ? '<details class="jd"><summary>Lihat detail musim</summary>' + h + '</details>' : '';
+  }
+
+  function kartu(x) {
+    var j = x.juara || {};
+    return '<div class="card" style="margin-bottom:14px"><div class="jr">'
+      + logo({ logo: j.logo, nama: j.nama || '?', warna: j.warna || '#2563eb' })
+      + '<div><div class="gelar">&#127942; JUARA &middot; ' + esc(x.nama) + '</div><h3>' + esc(j.nama) + '</h3>'
+      + '<div class="mut">Final: ' + esc(x.skorFinal || '-') + ' &middot; Runner-up: ' + esc((x.runner || {}).nama || '-') + ' &middot; ' + tglID(x.selesai, 1) + '</div></div></div>'
+      + '<div class="jstat"><span><b>' + x.jmlKlub + '</b> klub</span><span><b>' + x.jmlMatch + '</b> pertandingan</span><span><b>' + x.totalGol + '</b> gol</span>'
+      + (x.top && x.top.nama ? '<span>Top skor: <b>' + esc(x.top.nama) + '</b> (' + esc(x.top.klub) + ', ' + x.top.gol + ' gol)</span>' : '') + '</div>'
+      + (x.cerita ? '<p class="mut" style="margin:10px 0 0">' + esc(x.cerita) + '</p>' : '')
+      + detail(x) + '</div>';
+  }
+
+  function juaraHtml() {
+    if (MUSIM === null) { setTimeout(muat, 0); return '<div class="load"><div class="trk"><span class="rb">&#9917;</span></div><p class="mut">Memuat arsip juara...</p></div>'; }
+    setTimeout(function () { if (tab === 'juara' && !SEDANG && window._juaraFresh !== true) { window._juaraFresh = true; muat(); } }, 0);
+    if (!MUSIM.length) return '<h2>Hall of Fame</h2><p class="mut">Belum ada juara yang diarsipkan. Juara muncul setelah admin mengarsipkan musim yang sudah selesai.</p>';
+    return '<h2>Hall of Fame</h2>' + MUSIM.map(kartu).join('');
+  }
+
+  var _pindah = pindah;
+  pindah = function (t) { if (t === 'juara') window._juaraFresh = false; _pindah(t); };
+
+  var _render = render;
+  render = function () {
+    if (tab !== 'juara') return _render();
+    gambarNav();
+    document.getElementById('tgl').innerHTML = '&#128197; ' + new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    document.getElementById('thn').textContent = new Date().getFullYear();
+    updateHeader();
+    var ap = document.getElementById('app');
+    ap.innerHTML = normalizeUiIcons(juaraHtml());
+    if (window._kp !== 'juara|null') { ap.classList.remove('pg'); void ap.offsetWidth; ap.classList.add('pg'); window.scrollTo(0, 0); }
+    window._kp = 'juara|null';
+  };
+})();
+</script>

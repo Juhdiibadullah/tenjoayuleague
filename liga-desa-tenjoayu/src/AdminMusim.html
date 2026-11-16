@@ -1,0 +1,88 @@
+<script>
+/* AdminMusim — sub-tab "Musim & Juara" di ?page=Admin (Admin Utama saja).
+   Memanggil infoMusim, arsipkanMusim, ubahMusim, hapusMusim, mulaiMusimBaru dari Musim.gs.
+   Letakkan SETELAH include AdminPanel. */
+if (typeof ADMIN_PAGE !== 'undefined' && ADMIN_PAGE) {
+  var MS = { status: null, musim: [], muat: false, nama: '', cerita: '', konf: false, konfHapus: '', konfBaru: false, edit: null };
+
+  window.muatMusim = function () {
+    panggil('infoMusim', [PW], function (r) { MS.status = r.status; MS.musim = r.musim; MS.muat = true; render(); });
+  };
+  var _subLama = window.subPindah;
+  window.subPindah = function (s) {
+    if (s === 'musim') { SUB = 'musim'; render(); muatMusim(); return; }
+    _subLama(s);
+  };
+
+  // tombol sub-tab "Musim & Juara" (hanya Admin Utama)
+  var _kelolaDasar = kelola;
+  kelola = function () {
+    var h = _kelolaDasar();
+    if (!SES || ROLE !== 'admin') return h;
+    var tombol = '<button class="btn sm" style="' + (SUB === 'musim' ? '' : 'opacity:.6') + '" onclick="subPindah(\'musim\')">Musim &amp; Juara</button>';
+    return h.replace('<span class="mut" style="margin-left:auto">', tombol + '<span class="mut" style="margin-left:auto">');
+  };
+  var _dashLama = window.dashUI;
+  window.dashUI = function () { return SUB === 'musim' && ROLE === 'admin' ? musimUI() : _dashLama(); };
+
+  var msOk = function (r) {
+    MS.status = r.status; MS.musim = r.musim; MS.edit = null; MS.konfHapus = ''; MS.konf = false;
+    render(); toast('Tersimpan');
+  };
+  window.msNama = function (v_) { MS.nama = v_; MS.konf = false; };
+  window.msCerita = function (v_) { MS.cerita = v_; };
+  window.msArsip = function () {
+    if (!MS.nama.trim()) return gagal(new Error('Nama musim wajib diisi'));
+    if (!MS.konf) { MS.konf = true; return render(); }
+    panggil('arsipkanMusim', [PW, MS.nama, MS.cerita], function (r) { MS.nama = ''; MS.cerita = ''; msOk(r); toast('Juara diarsipkan & diumumkan'); });
+  };
+  window.msEdit = function (id) { var x = MS.musim.find(function (m) { return m.id === id; }); MS.edit = x ? { id: id, nama: x.nama, cerita: x.cerita || '' } : null; render(); };
+  window.msSimpanEdit = function () { panggil('ubahMusim', [PW, MS.edit.id, MS.edit.nama, MS.edit.cerita], msOk); };
+  window.msHapus = function (id) {
+    if (MS.konfHapus !== id) { MS.konfHapus = id; return render(); }
+    panggil('hapusMusim', [PW, id], msOk);
+  };
+  window.msBaru = function () {
+    if (!MS.konfBaru) { MS.konfBaru = true; return render(); }
+    MS.konfBaru = false;
+    panggil('mulaiMusimBaru', [PW], function (r) { MS.status = r.status; MS.musim = r.musim; load(r.data); toast('Musim baru dimulai. Silakan buat jadwal di Kelola Data.'); });
+  };
+
+  window.musimUI = function () {
+    var h = '<h2>Musim &amp; Juara</h2>';
+    if (!MS.muat) return h + '<div class="card mut">Memuat...</div>';
+    var s = MS.status;
+    h += '<div class="card">';
+    if (!s.selesai) {
+      h += '<b>Kompetisi belum selesai</b><div class="mut" style="margin-top:4px">' + esc(s.alasan) + '</div>';
+    } else if (s.sudahArsip) {
+      h += '<b>Musim ini sudah diarsipkan</b><div class="mut" style="margin-top:4px">Juara: ' + esc(s.juaraNama) + ' &middot; Runner-up: ' + esc(s.runnerNama) + '</div>';
+    } else {
+      h += '<b>Kompetisi selesai &mdash; siap diarsipkan</b><div class="mut" style="margin:4px 0 8px">Juara: ' + esc(s.juaraNama) + ' &middot; Runner-up: ' + esc(s.runnerNama) + '</div>'
+        + '<div class="form"><label class="mut">Nama musim<br><input value="' + esc(MS.nama) + '" placeholder="mis. Musim 2026" oninput="msNama(this.value)"></label></div>'
+        + '<textarea rows="3" placeholder="Cerita singkat musim (opsional)" oninput="msCerita(this.value)" style="width:100%;padding:8px;background:var(--bg);color:var(--txt);border:1px solid var(--line);border-radius:8px;font:inherit">' + esc(MS.cerita) + '</textarea>'
+        + '<button class="btn" style="margin-top:8px" onclick="msArsip()">' + (MS.konf ? 'Yakin? Arsipkan sekarang' : 'Arsipkan &amp; umumkan juara') + '</button>';
+    }
+    h += '</div>';
+
+    h += '<h2>Arsip musim (' + MS.musim.length + ')</h2><div class="card">';
+    if (!MS.musim.length) h += '<div class="mut">Belum ada arsip.</div>';
+    MS.musim.forEach(function (x) {
+      if (MS.edit && MS.edit.id === x.id) {
+        h += '<div style="padding:8px 0;border-bottom:1px solid var(--line)"><input value="' + esc(MS.edit.nama) + '" oninput="MS.edit.nama=this.value" style="width:100%;margin-bottom:6px">'
+          + '<textarea rows="3" oninput="MS.edit.cerita=this.value" style="width:100%;padding:8px;background:var(--bg);color:var(--txt);border:1px solid var(--line);border-radius:8px;font:inherit">' + esc(MS.edit.cerita) + '</textarea>'
+          + '<button class="btn sm" style="margin-top:6px" onclick="msSimpanEdit()">Simpan</button> <button class="btn sm" onclick="MS.edit=null;render()">Batal</button></div>';
+      } else {
+        h += '<div style="padding:8px 0;border-bottom:1px solid var(--line);display:flex;gap:8px;align-items:center;flex-wrap:wrap"><div style="flex:1;min-width:160px"><b>' + esc(x.nama) + '</b>'
+          + '<div class="mut">Juara: ' + esc(x.juaraNama) + ' &middot; Runner-up: ' + esc(x.runnerNama) + ' &middot; ' + esc(x.skorFinal || '-') + ' &middot; ' + esc(x.selesai) + '</div></div>'
+          + '<button class="btn sm" onclick="msEdit(\'' + x.id + '\')">Edit</button> <button class="btn sm" onclick="msHapus(\'' + x.id + '\')">' + (MS.konfHapus === x.id ? 'Yakin?' : 'Hapus') + '</button></div>';
+      }
+    });
+    h += '</div>';
+
+    h += '<h2>Musim baru</h2><div class="card"><p class="mut" style="margin-top:0">Mengosongkan jadwal, kejadian, dan gol. Klub &amp; pemain tetap. Hanya bisa setelah musim yang selesai diarsipkan (sebaiknya jalankan backupSpreadsheet() dulu).</p>'
+      + '<button class="btn" onclick="msBaru()">' + (MS.konfBaru ? 'Yakin? Jadwal, kejadian &amp; gol dikosongkan' : 'Mulai musim baru') + '</button></div>';
+    return h;
+  };
+}
+</script>

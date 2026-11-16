@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+<base target="_top">
+<meta charset="utf-8">
+<style>
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:system-ui,sans-serif; background:#eef2f6; color:#111; }
+  .bar { position:sticky; top:0; background:#0c1b2c; color:#fff; padding:10px 16px; display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+  .bar b { margin-right:auto; }
+  .bar label { font-size:14px; display:flex; gap:6px; align-items:center; }
+  button { background:#22c55e; color:#052e16; border:0; border-radius:8px; padding:8px 16px; font-weight:700; cursor:pointer; transition:transform .12s; }
+  button:active { transform:scale(.93); }
+  .kertas { background:#fff; max-width:800px; margin:16px auto; padding:28px 32px; box-shadow:0 2px 12px rgba(0,0,0,.15); }
+  h1 { margin:0; font-size:24px; text-align:center; } .sub { text-align:center; color:#555; margin:2px 0 18px; font-size:14px; border-bottom:2px solid #15803d; padding-bottom:12px; }
+  h2 { font-size:16px; margin:18px 0 6px; color:#15803d; }
+  table { width:100%; border-collapse:collapse; font-size:13px; margin-bottom:6px; }
+  th, td { border:1px solid #bbb; padding:6px 8px; text-align:center; }
+  th { background:#e8f5ec; } td.k { text-align:left; } td.r { text-align:right; }
+  .skor { width:80px; font-weight:700; }
+  .ttd { margin-top:36px; text-align:right; font-size:13px; } .ttd div { margin-top:60px; }
+  #err { color:#b91c1c; text-align:center; padding:20px; }
+  @media print {
+    body { background:#fff; } .bar { display:none; }
+    .kertas { box-shadow:none; margin:0; max-width:none; padding:0; }
+    h2, tr { break-inside:avoid; } h2 { break-after:avoid; }
+  }
+</style>
+</head>
+<body>
+<div class="bar">
+  <b>Cetak jadwal</b>
+  <label><input type="checkbox" id="oJadwal" checked onchange="tampil()"> Jadwal</label>
+  <label><input type="checkbox" id="oKlas" checked onchange="tampil()"> Klasemen</label>
+  <label><input type="checkbox" id="oSkor" checked onchange="tampil()"> Kolom skor kosong</label>
+  <button onclick="window.print()">Cetak</button>
+</div>
+<div id="err"></div>
+<div class="kertas" id="kertas">Memuat data...</div>
+<script>
+let D = null;
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const K = id => (D.klub.find(k => k.id === id) || { nama: '?' }).nama;
+const cek = id => document.getElementById(id).checked;
+function tgl(s) {
+  const p = String(s).slice(0, 10).split('-');
+  return new Date(+p[0], +p[1] - 1, +p[2]).toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+}
+function baris(m) {
+  const sel = m.status === 'Selesai';
+  const skor = sel ? m.skorHome + ' - ' + m.skorAway : (cek('oSkor') ? '&nbsp;' : 'vs');
+  return `<tr><td>${esc(tgl(m.tanggal))}</td><td>${esc(String(m.tanggal).slice(11, 16) || '15:00')}</td><td class="r">${esc(K(m.home))}</td><td class="skor">${skor}</td><td class="k">${esc(K(m.away))}</td></tr>`;
+}
+function tabelJadwal() {
+  if (!D.match.length) return '<p>Belum ada jadwal.</p>';
+  const grup = {};
+  D.match.forEach(m => {
+    const n = m.fase === 'Grup' ? 'Grup ' + m.grup + ' - Ronde ' + m.ronde : m.fase === 'Liga' ? 'Ronde ' + m.ronde : m.fase;
+    (grup[n] = grup[n] || []).push(m);
+  });
+  return Object.keys(grup).map(n => `<h2>${esc(n)}</h2><table><tr><th>Tanggal</th><th>Jam</th><th>Tuan rumah</th><th>Skor</th><th>Tamu</th></tr>${grup[n].map(baris).join('')}</table>`).join('');
+}
+function tabelKlasemen() {
+  return Object.keys(D.klasemen).sort().map(g => `<h2>Klasemen ${D.mode === 'liga' ? 'Liga' : 'Grup ' + esc(g)}</h2>
+    <table><tr><th>#</th><th>Klub</th><th>M</th><th>Mn</th><th>S</th><th>K</th><th>GM</th><th>GK</th><th>SG</th><th>Poin</th></tr>
+    ${D.klasemen[g].map((r, i) => `<tr><td>${i + 1}</td><td class="k">${esc(r.nama)}</td><td>${r.m}</td><td>${r.mn}</td><td>${r.s}</td><td>${r.k}</td><td>${r.gm}</td><td>${r.gk}</td><td>${r.sg}</td><td><b>${r.pts}</b></td></tr>`).join('')}</table>`).join('');
+}
+function tampil() {
+  if (!D) return;
+  document.getElementById('kertas').innerHTML = `<h1>Liga Desa Tenjoayu</h1>
+    <div class="sub">Jadwal dan klasemen &middot; dicetak ${new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</div>
+    ${cek('oJadwal') ? tabelJadwal() : ''}${cek('oKlas') ? tabelKlasemen() : ''}
+    <div class="ttd">Panitia Liga Desa Tenjoayu<div>(................................)</div></div>`;
+}
+google.script.run
+  .withSuccessHandler(d => { D = d; tampil(); })
+  .withFailureHandler(e => { document.getElementById('err').textContent = 'Gagal memuat: ' + (e.message || e); })
+  .getData(true);
+</script>
+</body>
+</html>

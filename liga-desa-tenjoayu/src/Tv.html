@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+<base target="_top">
+<meta charset="utf-8">
+<style>
+  :root { --bg:#07111f; --card:#0c1b2c; --line:#17324a; --txt:#e8f0f7; --mut:#8ca3b8; --acc:#22c55e; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:system-ui,sans-serif; background:radial-gradient(circle at 50% 0,#0b3b1f 0,var(--bg) 55%); color:var(--txt); min-height:100vh; padding:2vw; }
+  header { display:flex; justify-content:space-between; align-items:center; margin-bottom:2vw; }
+  header h1 { margin:0; font-size:clamp(22px,3.2vw,48px); } header h1 span { color:var(--acc); font-style:italic; }
+  #jam { font-size:clamp(18px,2.4vw,36px); font-weight:700; }
+  .grid { display:grid; grid-template-columns:1.2fr 1fr; gap:2vw; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:1.4vw; margin-bottom:2vw; animation:masuk .6s ease; }
+  @keyframes masuk { from { opacity:0; transform:translateY(20px); } }
+  h2 { margin:0 0 1vw; font-size:clamp(16px,1.8vw,28px); }
+  .mut { color:var(--mut); }
+  .next { display:grid; grid-template-columns:1fr auto 1fr; align-items:center; text-align:center; gap:1vw; font-size:clamp(14px,1.8vw,28px); font-weight:700; }
+  .next .vs { font-size:clamp(28px,4vw,64px); font-style:italic; }
+  .logo { width:clamp(56px,8vw,130px); height:clamp(56px,8vw,130px); border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-weight:700; font-size:clamp(20px,3vw,44px); color:#fff; object-fit:cover; border:3px solid rgba(255,255,255,.25); }
+  .logo.sm { width:clamp(26px,2.6vw,42px); height:clamp(26px,2.6vw,42px); font-size:clamp(10px,1vw,16px); border-width:1px; }
+  .jamb { display:inline-block; background:#15803d; border-radius:10px; padding:.2em .7em; margin:.4em 0; }
+  table { width:100%; border-collapse:collapse; font-size:clamp(14px,1.7vw,26px); }
+  th, td { padding:.5vw .3vw; text-align:center; border-bottom:1px solid var(--line); }
+  th { color:var(--mut); } th:nth-child(2), td:nth-child(2) { text-align:left; }
+  tr.first td { background:#14532d; }
+  .pts { color:#facc15; font-weight:800; }
+  .tim { display:flex; align-items:center; gap:.6em; }
+  .hasil { display:grid; grid-template-columns:1fr auto 1fr; gap:1vw; align-items:center; padding:.6vw 0; border-bottom:1px solid var(--line); font-size:clamp(14px,1.6vw,24px); }
+  .hasil .r { justify-content:flex-end; text-align:right; } .hasil b { text-align:center; min-width:3em; }
+  .ts { display:flex; justify-content:space-between; padding:.6vw 0; border-bottom:1px solid var(--line); font-size:clamp(14px,1.7vw,26px); }
+  #err { color:#fca5a5; }
+  @media (max-width:800px){ .grid { grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<header><h1>Liga Desa <span>Tenjoayu</span></h1><div id="jam"></div></header>
+<div id="app" class="mut">Memuat data...</div>
+<div id="err"></div>
+<script>
+let D = null;
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const K = id => D.klub.find(k => k.id === id) || {nama:'?', warna:'#555'};
+const logo = (k, sm) => k.logo ? `<img class="logo ${sm ? 'sm' : ''}" src="${esc(k.logo)}" alt="">`
+  : `<span class="logo ${sm ? 'sm' : ''}" style="background:${esc(k.warna)}">${esc(String(k.nama).split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase())}</span>`;
+const urut = a => a.slice().sort((x, y) => String(x.tanggal).localeCompare(String(y.tanggal)));
+function tglID(s) {
+  const p = String(s).slice(0, 10).split('-');
+  return new Date(+p[0], +p[1] - 1, +p[2]).toLocaleDateString('id-ID', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
+}
+function tim(id, right) { const k = K(id); return `<div class="tim ${right ? 'r' : ''}">${right ? esc(k.nama) + logo(k, 1) : logo(k, 1) + esc(k.nama)}</div>`; }
+
+function tampil() {
+  const nx = urut(D.match.filter(m => m.status !== 'Selesai'))[0];
+  const selesai = urut(D.match.filter(m => m.status === 'Selesai')).reverse().slice(0, 5);
+  const kl = [].concat(...Object.values(D.klasemen)).sort((a, b) => b.pts - a.pts || b.sg - a.sg || b.gm - a.gm).slice(0, 8);
+  const ts = (D.topSkor || []).slice(0, 5);
+  const next = nx ? `<div class="next"><div>${logo(K(nx.home))}<div>${esc(K(nx.home).nama)}</div></div>
+      <div><div class="vs">VS</div><div class="jamb">${esc(String(nx.tanggal).slice(11, 16) || '15:00')} WIB</div><div class="mut">${tglID(nx.tanggal)}</div></div>
+      <div>${logo(K(nx.away))}<div>${esc(K(nx.away).nama)}</div></div></div>` : '<p class="mut">Belum ada pertandingan terjadwal.</p>';
+  document.getElementById('app').innerHTML = `<div class="grid"><div>
+    <div class="card"><h2>&#127942; Pertandingan Berikutnya</h2>${next}</div>
+    <div class="card"><h2>&#9917; Hasil Terakhir</h2>${selesai.map(m => `<div class="hasil">${tim(m.home, 1)}<b>${m.skorHome} - ${m.skorAway}</b>${tim(m.away)}</div>`).join('') || '<p class="mut">Belum ada hasil.</p>'}</div>
+    </div><div>
+    <div class="card"><h2>&#128202; Klasemen</h2><table><tr><th>#</th><th>Klub</th><th>M</th><th>SG</th><th>Poin</th></tr>
+      ${kl.map((r, i) => `<tr class="${i === 0 ? 'first' : ''}"><td>${i + 1}</td><td><div class="tim">${logo(K(r.id), 1)}${esc(r.nama)}</div></td><td>${r.m}</td><td>${r.sg > 0 ? '+' : ''}${r.sg}</td><td class="pts">${r.pts}</td></tr>`).join('')}</table></div>
+    <div class="card"><h2>&#129351; Top Score</h2>${ts.map((p, i) => `<div class="ts"><span>${i + 1}. ${esc(p.nama)} <span class="mut">(${esc(K(p.klubId).nama)})</span></span><b>${p.gol} Gol</b></div>`).join('') || '<p class="mut">Belum ada gol.</p>'}</div>
+    </div></div>`;
+}
+
+function muat() {
+  google.script.run
+    .withSuccessHandler(d => { D = d; document.getElementById('err').textContent = ''; tampil(); })
+    .withFailureHandler(e => { document.getElementById('err').textContent = 'Gagal memuat: ' + (e.message || e); })
+    .getData();
+}
+function jam() { document.getElementById('jam').textContent = new Date().toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit', second:'2-digit'}) + ' WIB'; }
+jam(); setInterval(jam, 1000);
+muat(); setInterval(muat, 30000);
+</script>
+</body>
+</html>
+

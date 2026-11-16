@@ -1,0 +1,147 @@
+<script>
+/* PublikPanel — (1) tombol Login Admin di header, (2) tampilan pertandingan ala skor langsung:
+   tim kiri/kanan, skor di tengah, pencetak gol & kartu di bawah (tuan rumah kiri, tamu kanan),
+   (3) kartu pada profil pemain, (4) statistik kartu. Hanya MENAMBAH tampilan. */
+
+/* ===== Tombol Login Admin (pojok kanan atas) ===== */
+(function () {
+  try {
+    if (typeof ADMIN_PAGE !== 'undefined' && ADMIN_PAGE) return;
+    var css = '.admin-login{display:flex;align-items:center;gap:7px;height:40px;padding:0 15px 0 12px;border-radius:22px;border:1px solid rgba(76,166,231,.45);background:linear-gradient(110deg,#0878d5,#16b7ff);color:#fff;font-size:12px;font-weight:700;text-decoration:none;white-space:nowrap;box-shadow:0 5px 15px rgba(0,125,220,.22);cursor:pointer}'
+      + '.admin-login[hidden]{display:none}.admin-login:hover{filter:brightness(1.12)}'
+      + '.admin-login svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}'
+      + '@media(max-width:720px){.admin-login{width:34px;height:34px;padding:0;justify-content:center}.admin-login .admin-txt{display:none}}';
+    var st = document.createElement('style');
+    st.textContent = css;
+    document.head.appendChild(st);
+    var wrap = document.querySelector('.topbar-actions');
+    if (!wrap) return;
+    var a = document.createElement('a');
+    a.id = 'btnAdmin'; a.className = 'admin-login'; a.target = '_top'; a.title = 'Login Admin'; a.href = '#'; a.hidden = true;
+    a.innerHTML = '<svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 1 1 8 0v3"/></svg><span class="admin-txt">Login Admin</span>';
+    wrap.insertBefore(a, wrap.firstChild);
+    google.script.run
+      .withSuccessHandler(function (u) { if (u) { a.href = u + '?page=Admin'; a.hidden = false; } })
+      .withFailureHandler(function () {})
+      .urlApp();
+  } catch (e) { console.error('Tombol admin gagal dibuat', e); }
+})();
+
+/* ===== Tampilan pertandingan, kartu, statistik ===== */
+(function () {
+  var css = '.mc{padding:14px 4px;border-bottom:1px solid var(--line)}.mc:last-child{border-bottom:0}'
+    + '.mc-top{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:12px;color:var(--mut);margin-bottom:10px}'
+    + '.mc-st{font-weight:700;color:var(--txt);white-space:nowrap}.mc-st.live{color:#4ade80}.mc-st.stop{color:#f87171}'
+    + '.mc-main{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:8px}'
+    + '.mc-team{display:flex;flex-direction:column;align-items:center;gap:7px;text-align:center;font-weight:700;min-width:0;overflow-wrap:anywhere}'
+    + '.mc-team .logo{width:58px;height:58px;font-size:19px}'
+    + '.mc-score{font-size:clamp(26px,6vw,42px);font-weight:600;letter-spacing:2px;white-space:nowrap;text-align:center;color:var(--txt)}'
+    + '.mc-score.vs{font-size:20px;color:var(--mut);font-style:italic}'
+    + '.mc-ev{margin-top:12px;padding-top:10px;border-top:1px solid var(--line);font-size:13px}'
+    + '.mc-row{display:grid;grid-template-columns:minmax(0,1fr) 34px minmax(0,1fr);align-items:center;gap:4px;padding:3px 0}'
+    + '.mc-row .l{text-align:left;overflow-wrap:anywhere}.mc-row .r{text-align:right;overflow-wrap:anywhere}'
+    + '.mc-row .c{display:flex;justify-content:center;align-items:center}'
+    + '.mc-row .mn{color:var(--mut)}.mc-row .tag{color:var(--mut);font-size:11px}'
+    + '.kt{display:inline-block;width:10px;height:14px;border-radius:2px}.kt.y{background:#facc15}.kt.r{background:#ef4444}'
+    + '.bl{width:15px;height:15px;fill:none;stroke:var(--txt);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}'
+    + '@media(max-width:720px){.mc-team .logo{width:44px;height:44px;font-size:15px}.mc-ev{font-size:12px}.mc-row{grid-template-columns:minmax(0,1fr) 26px minmax(0,1fr)}}';
+  var st = document.createElement('style');
+  st.textContent = css;
+  document.head.appendChild(st);
+
+  var BALL = '<svg class="bl" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m12 7 3 2-1 4h-4l-1-4Zm-3 2-3 1m8 0 4 1m-8 3-2 4m5-4 2 4"/></svg>';
+  var KJ = function () { return (D && D.kejadian) || []; };
+  var GMx = function () { return (D && D.golMatch) || []; };
+  var pemainById = function (id) { return D.pemain.find(function (x) { return x.id === id; }); };
+  var namaP = function (id) { var p = pemainById(id); return p ? p.nama : '?'; };
+
+  var ikon = function (j) {
+    if (j === 'KUNING') return '<span class="kt y" title="Kartu kuning"></span>';
+    if (j === 'MERAH_LANGSUNG' || j === 'MERAH_DUA_KUNING') return '<span class="kt r" title="Kartu merah"></span>';
+    return BALL;
+  };
+
+  // daftar kejadian satu pertandingan, sudah ditentukan sisinya (h = tuan rumah/kiri, a = tamu/kanan)
+  function daftarEv(m) {
+    var ev = KJ().filter(function (e) { return e.matchId === m.id; }).map(function (e) {
+      var side = e.klubId === m.home ? 'h' : 'a', tag = '';
+      if (e.jenis === 'GOL_BUNUH_DIRI') { side = side === 'h' ? 'a' : 'h'; tag = '(bunuh diri)'; } // skor masuk ke lawan
+      if (e.jenis === 'PENALTI') tag = '(pen)';
+      if (e.jenis === 'MERAH_DUA_KUNING') tag = '(2 kuning)';
+      return { side: side, jenis: e.jenis, menit: e.menit, nama: namaP(e.pemainId), tag: tag };
+    });
+    ev.sort(function (x, y) { return (Number(x.menit) || 0) - (Number(y.menit) || 0); });
+    if (!ev.length) { // data lama (pencetak gol tanpa menit)
+      GMx().filter(function (x) { return x.matchId === m.id; }).forEach(function (x) {
+        var p = pemainById(x.pemainId);
+        if (!p) return;
+        for (var i = 0; i < (Number(x.jumlah) || 0); i++) ev.push({ side: p.klubId === m.home ? 'h' : 'a', jenis: 'GOL', menit: '', nama: p.nama, tag: '' });
+      });
+    }
+    return ev;
+  }
+
+  function barisEv(e) {
+    var teks = esc(e.nama) + (e.tag ? ' <span class="tag">' + e.tag + '</span>' : '')
+      + (e.menit !== '' && e.menit !== undefined && e.menit !== null ? ' <span class="mn">' + esc(e.menit) + '\'</span>' : '');
+    var tengah = '<div class="c">' + ikon(e.jenis) + '</div>';
+    return e.side === 'h'
+      ? '<div class="mc-row"><div class="l">' + teks + '</div>' + tengah + '<div></div></div>'
+      : '<div class="mc-row"><div></div>' + tengah + '<div class="r">' + teks + '</div></div>';
+  }
+
+  var STATUS_TXT = { Belum: 'Belum dimulai', 'Sedang Berlangsung': 'Sedang berlangsung', Selesai: 'Selesai', Ditunda: 'Ditunda', Dibatalkan: 'Dibatalkan' };
+
+  var _bm2 = barisMatch;
+  barisMatch = function (m, edit) {
+    if (edit) return _bm2(m, edit); // tampilan admin (input skor) tidak diubah
+    var h = K(m.home), a = K(m.away);
+    var jam = String(m.tanggal).slice(11, 16) || '15:00';
+    var tampil = m.status === 'Selesai' || m.status === 'Sedang Berlangsung';
+    var skor = tampil ? (m.skorHome === '' ? 0 : m.skorHome) + ' - ' + (m.skorAway === '' ? 0 : m.skorAway) : 'vs';
+    var kls = m.status === 'Sedang Berlangsung' ? ' live' : (m.status === 'Ditunda' || m.status === 'Dibatalkan' ? ' stop' : '');
+    var ev = daftarEv(m);
+    return '<div class="mc"><div class="mc-top"><span>&#128197; ' + tglID(m.tanggal, 1) + ' &middot; ' + esc(jam) + ' WIB</span>'
+      + '<span class="mc-st' + kls + '">' + esc(STATUS_TXT[m.status] || m.status) + '</span></div>'
+      + '<div class="mc-main"><div class="mc-team">' + logo(h) + '<span>' + esc(h.nama) + '</span></div>'
+      + '<div class="mc-score' + (tampil ? '' : ' vs') + '">' + skor + '</div>'
+      + '<div class="mc-team">' + logo(a) + '<span>' + esc(a.nama) + '</span></div></div>'
+      + (ev.length ? '<div class="mc-ev">' + ev.map(barisEv).join('') + '</div>' : '') + '</div>';
+  };
+
+  // ringkasan kartu pada kartu pemain
+  var hitung = function (id) {
+    var k = 0, r = 0;
+    KJ().forEach(function (e) {
+      if (e.pemainId !== id) return;
+      if (e.jenis === 'KUNING') k++;
+      else if (e.jenis === 'MERAH_LANGSUNG' || e.jenis === 'MERAH_DUA_KUNING') r++;
+    });
+    return { k: k, r: r };
+  };
+  var _foto0 = foto;
+  foto = function (p, k) {
+    var c = hitung(p.id);
+    return _foto0(p, k) + (c.k || c.r ? '<div class="mut" style="padding:3px 8px 0;font-size:11px">' + (c.k ? '<span class="kt y"></span> ' + c.k + ' ' : '') + (c.r ? '<span class="kt r"></span> ' + c.r : '') + '</div>' : '');
+  };
+
+  // statistik kartu di bawah Top Skor
+  var _ts0 = topskor;
+  topskor = function () {
+    var t = {};
+    KJ().forEach(function (e) {
+      if (['KUNING', 'MERAH_LANGSUNG', 'MERAH_DUA_KUNING'].indexOf(e.jenis) < 0) return;
+      var o = t[e.pemainId] = t[e.pemainId] || { id: e.pemainId, k: 0, r: 0 };
+      if (e.jenis === 'KUNING') o.k++; else o.r++;
+    });
+    var l = Object.keys(t).map(function (i) { return t[i]; }).sort(function (a, b) { return b.r - a.r || b.k - a.k; }).slice(0, 15);
+    var tabel = l.length ? '<h2>Statistik Kartu</h2><div class="card"><table><tr><th>#</th><th>Pemain</th><th>Klub</th><th><span class="kt y"></span></th><th><span class="kt r"></span></th></tr>'
+      + l.map(function (o, i) {
+        var p = D.pemain.find(function (x) { return x.id === o.id; }) || { nama: '?', klubId: '' };
+        return '<tr><td>' + (i + 1) + '</td><td>' + esc(p.nama) + '</td><td>' + esc(K(p.klubId).nama) + '</td><td>' + o.k + '</td><td>' + o.r + '</td></tr>';
+      }).join('') + '</table></div>' : '';
+    return _ts0() + tabel;
+  };
+  TABS.forEach(function (t) { if (t[0] === 'topskor') t[2] = 'Top Skor & Statistik'; });
+})();
+</script>

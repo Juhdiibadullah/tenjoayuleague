@@ -1,0 +1,159 @@
+<script>
+/* AdminPanel — Dashboard Admin + Input Pertandingan (versi perbaikan).
+   Hanya aktif pada ?page=Admin (ADMIN_PAGE). Halaman publik tidak terpengaruh.
+   Perbaikan: fungsi dibuat sebagai window.* (aman di semua browser), dan
+   buatJadwal() tidak lagi error karena elemen #msg tidak ada di tab Kelola Data. */
+if (typeof ADMIN_PAGE !== 'undefined' && ADMIN_PAGE) {
+  var SES = null, SUB = 'dash';
+  var IM = { matchId: '', aksi: '', klubId: '', rid: '', kej: [], konf: false, batalId: '', alasan: '', f: { pemainId: '', menit: '', jenis: 'GOL', ket: '' }, audit: [] };
+  var JL = { GOL: 'Gol', PENALTI: 'Gol penalti', GOL_BUNUH_DIRI: 'Gol bunuh diri', KUNING: 'Kartu kuning', MERAH_LANGSUNG: 'Kartu merah langsung', MERAH_DUA_KUNING: 'Kartu merah (2 kuning)' };
+  var SL = { Belum: 'Belum Dimulai', 'Sedang Berlangsung': 'Sedang Berlangsung', Selesai: 'Selesai', Ditunda: 'Ditunda', Dibatalkan: 'Dibatalkan' };
+  var _kelolaLama = kelola;
+  var rid_ = function () { return 'r' + Date.now().toString(36) + Math.random().toString(36).slice(2, 10); };
+
+  window.STATUS_ALL = function () { return ['Belum', 'Sedang Berlangsung', 'Selesai', 'Ditunda', 'Dibatalkan']; };
+
+  window.masukBaru = function () {
+    var u = v('lu').trim(), p = v('lp');
+    if (!u || !p) return toast('Isi username dan password');
+    panggil('loginAdmin', [u, p], function (r) {
+      SES = r; PW = r.token; ROLE = r.peran === 'Admin Utama' ? 'admin' : 'petugas'; SUB = 'dash';
+      if (!window.D) panggil('getData', [true], function (d) { load(d); });
+      render(); toast('Selamat datang, ' + r.nama);
+      if (ROLE === 'admin') muatDaftar();
+      muatAudit();
+    });
+  };
+  window.keluar = function () {
+    if (SES) google.script.run.logoutAdmin(SES.token);
+    SES = null; ROLE = null; RK = null; PW = ''; edK = null; edP = null; render();
+  };
+  window.muatAudit = function () { panggil('ringkasAudit', [PW], function (r) { IM.audit = r; if (SUB === 'dash') render(); }); };
+  window.subPindah = function (s) { SUB = s; render(); if (s === 'dash') muatAudit(); };
+
+  // tombol "Buat jadwal otomatis" di tab Kelola Data (elemen #msg tidak ada di sini)
+  window.buatJadwal = function () {
+    var e = document.getElementById('msg'); if (e) e.textContent = 'Memproses...';
+    panggil('generateJadwal', [MULAI, PW], ok);
+  };
+
+  kelola = function () {
+    if (!SES) return '<div class="card login-panel"><div class="login-heading"><span class="login-icon">&#128274;</span><div><b>Dashboard Admin</b><div class="mut">Masuk dengan akun pengelola</div></div></div>'
+      + '<input id="lu" placeholder="Username" autocomplete="username"> <input id="lp" type="password" placeholder="Password" autocomplete="current-password" onkeydown="if(event.key===\'Enter\')masukBaru()"> '
+      + '<button class="btn" onclick="masukBaru()">Masuk</button></div>';
+    var utama = ROLE === 'admin';
+    var subs = [['dash', 'Dashboard'], ['input', 'Input Pertandingan']].concat(utama ? [['kelola', 'Kelola Data']] : []);
+    var h = '<div class="card" style="margin-bottom:12px"><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">'
+      + subs.map(function (s) { return '<button class="btn sm" style="' + (SUB === s[0] ? '' : 'opacity:.6') + '" onclick="subPindah(\'' + s[0] + '\')">' + s[1] + '</button>'; }).join('')
+      + '<span class="mut" style="margin-left:auto">' + esc(SES.nama) + ' &middot; ' + esc(SES.peran) + '</span><button class="btn sm" onclick="keluar()">Keluar</button></div></div>';
+    if (!window.D) return h + '<div class="card mut">Memuat data...</div>';
+    if (SUB === 'input') return h + inputUI();
+    if (SUB === 'kelola' && utama) {
+      var lama = _kelolaLama(), i = lama.indexOf('</p></div>');
+      return h + (i >= 0 ? lama.slice(i + 10) : lama);
+    }
+    return h + dashUI();
+  };
+
+  window.dashUI = function () {
+    var ms = urut(D.match), sel = ms.filter(function (m) { return m.status === 'Selesai'; }).reverse()[0];
+    var nx = ms.filter(function (m) { return m.status !== 'Selesai' && m.status !== 'Dibatalkan'; })[0];
+    var st = function (n, l) { return '<div class="card stat"><div><b>' + n + '</b><span class="mut">' + l + '</span></div></div>'; };
+    var nm = function (m) { return esc(K(m.home).nama) + ' vs ' + esc(K(m.away).nama); };
+    return '<div class="stats">' + st(D.klub.length, 'Klub') + st(D.pemain.length, 'Pemain') + st(D.match.length, 'Pertandingan') + st(D.match.filter(function (m) { return m.status === 'Selesai'; }).length, 'Selesai') + '</div>'
+      + '<div class="two"><div class="card"><b>Pertandingan berikutnya</b><div class="mut" style="margin-top:6px">' + (nx ? esc(String(nx.tanggal).slice(0, 16)) + '<br>' + nm(nx) : 'Belum ada') + '</div></div>'
+      + '<div class="card"><b>Hasil terakhir</b><div class="mut" style="margin-top:6px">' + (sel ? esc(K(sel.home).nama) + ' ' + sel.skorHome + ' - ' + sel.skorAway + ' ' + esc(K(sel.away).nama) : 'Belum ada') + '</div></div></div>'
+      + '<h2>Aktivitas Admin</h2><div class="card flat">' + (IM.audit.length ? IM.audit.map(function (a) {
+        return '<div class="info"><span class="dot"></span><span><b>' + esc(a.admin) + '</b> ' + esc(a.aksi) + ' <span class="mut">' + esc(a.objek) + '</span></span><em>' + esc(String(a.waktu).slice(5, 16)) + '</em></div>';
+      }).join('') : '<div class="info mut">Belum ada aktivitas.</div>') + '</div>';
+  };
+
+  // ---------- Input Pertandingan ----------
+  window.pilihMatch = function (id) {
+    IM.matchId = id; IM.aksi = ''; IM.kej = []; IM.konf = false; IM.batalId = ''; IM.alasan = '';
+    if (id) panggil('daftarKejadianAdmin', [PW, id], function (r) { IM.kej = r; render(); });
+    render();
+  };
+  window.setAksi = function (a) { IM.aksi = a; IM.rid = rid_(); IM.konf = false; IM.klubId = ''; IM.f = { pemainId: '', menit: '', jenis: 'GOL', ket: '' }; render(); };
+  window.setKlub = function (k) { IM.klubId = k; IM.f.pemainId = ''; IM.konf = false; render(); };
+  window.setF = function (k, val) { IM.f[k] = val; IM.konf = false; };
+  window.setAlasan = function (val) { IM.alasan = val; };
+  window.hasilKej = function (r) {
+    IM.kej = r.kejadian; IM.konf = false; IM.batalId = ''; IM.alasan = '';
+    IM.aksi = ''; IM.f = { pemainId: '', menit: '', jenis: 'GOL', ket: '' };
+    load(r.data); toast('Tersimpan');
+  };
+  window.kirimKej = function () {
+    var f = IM.f, jenis = IM.aksi === 'GOL' ? f.jenis : IM.aksi;
+    if (!IM.klubId || !f.pemainId || f.menit === '') return gagal(new Error('Lengkapi klub, pemain, dan menit'));
+    if (!IM.konf) { IM.konf = true; return render(); }
+    panggil('tambahKejadian', [PW, { requestId: IM.rid, matchId: IM.matchId, klubId: IM.klubId, pemainId: f.pemainId, menit: f.menit, jenis: jenis, keterangan: f.ket }], hasilKej);
+  };
+  window.batalUI = function (id) {
+    if (IM.batalId !== id) { IM.batalId = id; IM.alasan = ''; return render(); }
+    if (!IM.alasan.trim()) return gagal(new Error('Isi alasan pembatalan'));
+    panggil('batalKejadian', [PW, id, IM.alasan], hasilKej);
+  };
+  window.statusUI = function (s) {
+    var m = D.match.find(function (x) { return x.id === IM.matchId; });
+    if (m.status === 'Selesai' && !IM.alasan.trim()) return gagal(new Error('Isi alasan membuka kembali pertandingan'));
+    if (s === 'Selesai' && IM.konf !== 'selesai') { IM.konf = 'selesai'; return render(); }
+    panggil('ubahStatus', [PW, IM.matchId, s, IM.alasan], hasilKej);
+  };
+
+  window.inputUI = function () {
+    var ms = urut(D.match), m = D.match.find(function (x) { return x.id === IM.matchId; });
+    var h = '<h2>Input Pertandingan</h2><div class="card"><label class="mut">1. Pilih pertandingan<br><select onchange="pilihMatch(this.value)" style="width:100%"><option value="">-- pilih --</option>'
+      + ms.map(function (x) { return '<option value="' + x.id + '"' + (x.id === IM.matchId ? ' selected' : '') + '>' + esc(String(x.tanggal).slice(0, 10)) + ' &middot; ' + esc(K(x.home).nama) + ' vs ' + esc(K(x.away).nama) + ' [' + (SL[x.status] || esc(x.status)) + ']</option>'; }).join('')
+      + '</select></label></div>';
+    if (!m) return h;
+    var kunci = m.status === 'Selesai' || m.status === 'Dibatalkan', skor = m.skorHome === '' ? '0 - 0' : m.skorHome + ' - ' + m.skorAway;
+    h += '<div class="card next" style="margin-top:12px"><div>' + logo(K(m.home)) + '<div><b>' + esc(K(m.home).nama) + '</b></div></div>'
+      + '<div><div class="vs">' + skor + '</div><div class="jam">' + esc(SL[m.status] || m.status) + '</div><div class="mut">' + esc(String(m.tanggal).slice(0, 16)) + ' WIB</div></div>'
+      + '<div>' + logo(K(m.away)) + '<div><b>' + esc(K(m.away).nama) + '</b></div></div></div>';
+    // status
+    h += '<div class="card" style="margin-top:12px"><b>Status</b><div style="margin:8px 0;display:flex;gap:6px;flex-wrap:wrap">'
+      + STATUS_ALL().filter(function (s) { return s !== m.status; }).map(function (s) { return '<button class="btn sm" onclick="statusUI(\'' + s + '\')">' + (s === 'Selesai' && IM.konf === 'selesai' ? 'Yakin? Selesai &amp; kunci' : (m.status === 'Selesai' ? 'Buka kembali: ' : '') + SL[s]) + '</button>'; }).join('')
+      + '</div>' + (m.status === 'Selesai' ? '<input placeholder="Alasan membuka kembali (wajib)" value="' + esc(IM.alasan) + '" oninput="setAlasan(this.value)" style="width:100%">' : '') + '</div>';
+    if (kunci) return h + '<p class="mut">Pertandingan terkunci dari input biasa.</p>' + timelineUI(m, true);
+    // aksi
+    h += '<div class="card" style="margin-top:12px"><b>2. Pilih aksi</b><div style="margin:8px 0;display:flex;gap:6px;flex-wrap:wrap">'
+      + [['GOL', 'Input Gol'], ['KUNING', 'Kartu Kuning'], ['MERAH_LANGSUNG', 'Kartu Merah']].map(function (a) { return '<button class="btn sm" style="' + (IM.aksi === a[0] ? '' : 'opacity:.6') + '" onclick="setAksi(\'' + a[0] + '\')">' + a[1] + '</button>'; }).join('') + '</div>';
+    if (IM.aksi) {
+      var ps = IM.klubId ? D.pemain.filter(function (p) { return p.klubId === IM.klubId; }).sort(function (a, b) { return a.nomor - b.nomor; }) : [];
+      h += '<div class="form"><label class="mut">Klub<br><select onchange="setKlub(this.value)"><option value="">-- klub --</option>'
+        + [m.home, m.away].map(function (k) { return '<option value="' + k + '"' + (k === IM.klubId ? ' selected' : '') + '>' + esc(K(k).nama) + '</option>'; }).join('') + '</select></label>'
+        + '<label class="mut">Pemain<br><select onchange="setF(\'pemainId\',this.value)"><option value="">-- pemain --</option>'
+        + ps.map(function (p) { return '<option value="' + p.id + '"' + (p.id === IM.f.pemainId ? ' selected' : '') + '>' + esc(p.nomor) + '. ' + esc(p.nama) + '</option>'; }).join('') + '</select></label>'
+        + '<label class="mut">Menit<br><input type="number" min="0" max="130" value="' + esc(IM.f.menit) + '" oninput="setF(\'menit\',this.value)"></label>'
+        + (IM.aksi === 'GOL' ? '<label class="mut">Jenis gol<br><select onchange="setF(\'jenis\',this.value)">' + ['GOL', 'PENALTI', 'GOL_BUNUH_DIRI'].map(function (j) { return '<option value="' + j + '"' + (j === IM.f.jenis ? ' selected' : '') + '>' + JL[j] + '</option>'; }).join('') + '</select></label>'
+          : '<label class="mut">Keterangan (opsional)<br><input value="' + esc(IM.f.ket) + '" oninput="setF(\'ket\',this.value)"></label>') + '</div>'
+        + (IM.aksi === 'GOL' && IM.f.jenis === 'GOL_BUNUH_DIRI' ? '<p class="mut">Pilih pemain yang melakukan gol bunuh diri; skor masuk ke klub lawan.</p>' : '')
+        + (IM.aksi === 'KUNING' ? '<p class="mut">Kuning kedua pemain yang sama otomatis menghasilkan kartu merah.</p>' : '')
+        + '<button class="btn" onclick="kirimKej()">' + (IM.konf === true ? 'Yakin? Simpan sekarang' : 'Simpan') + '</button>'
+        + (IM.konf === true ? ' <span class="mut">Periksa data, tekan sekali lagi untuk menyimpan.</span>' : '');
+    }
+    return h + '</div>' + timelineUI(m, false);
+  };
+
+  window.timelineUI = function (m, terkunci) {
+    var h = '<h2>Riwayat kejadian</h2><div class="card flat">';
+    if (!IM.kej.length) return h + '<div class="info mut">Belum ada kejadian.</div></div>';
+    h += IM.kej.map(function (e) {
+      var batal = e.status !== 'Valid';
+      return '<div class="info" style="' + (batal ? 'opacity:.5;text-decoration:line-through' : '') + '"><b>' + esc(e.menit) + '\'</b><span>' + esc(JL[e.jenis] || e.jenis) + ' &middot; ' + esc(e.nomor) + '. ' + esc(e.pemainNama) + ' <span class="mut">(' + esc(e.klubNama) + ')</span>'
+        + (e.keterangan ? ' <span class="mut">' + esc(e.keterangan) + '</span>' : '') + (batal ? ' <span class="mut">[batal: ' + esc(e.alasanBatal) + ']</span>' : '') + '</span>'
+        + (!batal && !terkunci && e.jenis !== 'MERAH_DUA_KUNING' ? '<em><button class="btn sm" onclick="batalUI(\'' + e.id + '\')">' + (IM.batalId === e.id ? 'Konfirmasi batal' : 'Batalkan') + '</button></em>' : '') + '</div>'
+        + (IM.batalId === e.id ? '<div class="info"><input placeholder="Alasan pembatalan (wajib)" value="' + esc(IM.alasan) + '" oninput="setAlasan(this.value)" style="width:100%"></div>' : '');
+    }).join('');
+    return h + '</div>';
+  };
+
+  // Tampilkan kotak login seketika, tanpa menunggu data dari server.
+  try {
+    selesaiIntro();
+    var _ap = document.getElementById('app');
+    if (_ap && !window.D) _ap.innerHTML = kelola();
+  } catch (e) { console.error('AdminPanel awal gagal', e); }
+}
+</script>

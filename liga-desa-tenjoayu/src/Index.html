@@ -1,0 +1,1429 @@
+<!DOCTYPE html>
+<html>
+<head>
+<base target="_top">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<script>
+/* Pastikan WebView Android memakai lebar layar perangkat, bukan layout desktop. */
+(function(){
+  try {
+    var vp = document.querySelector('meta[name="viewport"]');
+    var w = (window.screen && window.screen.width) ? window.screen.width : 0;
+    if (vp && w > 0 && w < 900) vp.setAttribute('content', 'width=' + w + ', initial-scale=1, viewport-fit=cover');
+  } catch(e) {}
+})();
+</script>
+<style>
+  :root { --bg:#030b18; --side:#06172c; --card:#0a1d35; --line:#16466f; --txt:#edf6ff; --mut:#9bb5d0; --acc:#16a8ff; --acc2:#0875d1; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:system-ui,sans-serif; background:var(--bg); color:var(--txt); }
+  .app { display:grid; grid-template-columns:230px 1fr; min-height:100vh; }
+  aside { background:var(--side); border-right:1px solid var(--line); padding:18px 12px; display:flex; flex-direction:column; gap:6px; position:sticky; top:0; height:100vh; }
+  .brand { text-align:center; font-weight:800; font-size:20px; line-height:1.1; padding:6px 0 18px; }
+  .brand .sh { font-size:46px; display:block; }
+  .brand span { color:var(--acc); }
+  nav { display:flex; flex-direction:column; gap:4px; }
+  nav button { background:none; border:0; color:#cbd8e4; padding:11px 14px; cursor:pointer; font-size:14px; border-radius:10px; text-align:left; display:flex; gap:12px; align-items:center; }
+  nav button:hover, .lnk:hover { background:#0e2538; }
+  .lnk { color:#cbd8e4; padding:11px 14px; font-size:14px; border-radius:10px; display:flex; gap:12px; align-items:center; text-decoration:none; transition:transform .12s; } .lnk:active { transform:scale(.92); }
+  .sep { border-top:1px solid var(--line); margin:8px 4px; }
+  nav button.on { background:linear-gradient(90deg,var(--acc2),#16a34a); color:#fff; font-weight:700; }
+  .slogan { margin-top:auto; font-style:italic; font-weight:600; color:#cbd8e4; padding:12px; border-top:1px solid var(--line); font-size:14px; }
+  .slogan b { color:var(--acc); }
+  .wrap { display:flex; flex-direction:column; min-width:0; }
+  .top { display:flex; justify-content:space-between; align-items:center; padding:14px 22px; border-bottom:1px solid var(--line); background:var(--side); font-size:14px; }
+  .who { background:var(--card); border:1px solid var(--line); border-radius:20px; padding:6px 14px; }
+  main { padding:16px 22px; max-width:1180px; width:100%; margin:auto; flex:1; }
+  footer { padding:12px 22px; border-top:1px solid var(--line); background:var(--side); display:flex; justify-content:space-between; font-size:12px; color:var(--mut); }
+  .hero { border-radius:14px; border:1px solid var(--line); padding:30px 28px; margin-bottom:14px; position:relative; overflow:hidden; background:linear-gradient(100deg,#050c16 40%,#0b3b1f 100%); }
+  .hero small { font-size:20px; font-weight:600; }
+  .hero h1 { margin:2px 0 8px; font-size:44px; line-height:1.05; }
+  .hero h1 span { color:var(--acc); font-style:italic; }
+  .hero i { font-weight:600; }
+  .hero .ball { position:absolute; right:26px; top:50%; transform:translateY(-50%); font-size:120px; opacity:.9; }
+  .stats { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:14px; }
+  .stat { display:flex; gap:14px; align-items:center; padding:14px 18px; }
+  .stat .ic { font-size:34px; }
+  .stat b { font-size:30px; display:block; line-height:1; }
+  .two { display:grid; grid-template-columns:1.15fr 1fr; gap:14px; margin-bottom:14px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px; }
+  .card.flat { padding:0; overflow:hidden; }
+  .ch { display:flex; justify-content:space-between; align-items:center; padding:12px 16px; font-weight:700; }
+  .link { background:var(--acc); color:#052e16; border:0; border-radius:16px; padding:5px 12px; font-size:12px; font-weight:700; cursor:pointer; }
+  .next { display:grid; grid-template-columns:1fr auto 1fr; align-items:center; text-align:center; padding:18px 12px; background:linear-gradient(180deg,#0a1a2a,#0d3a1f); gap:8px; }
+  .next .vs { font-size:34px; font-weight:800; font-style:italic; }
+  .jam { display:inline-block; background:var(--acc2); border-radius:8px; padding:4px 12px; margin:6px 0; font-weight:700; }
+  .klub { cursor:pointer; text-align:center; }
+  .klub:hover { border-color:var(--acc); }
+  .logo { width:72px; height:72px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-weight:700; font-size:24px; color:#fff; object-fit:cover; border:3px solid rgba(255,255,255,.25); }
+  .logo.sm { width:28px; height:28px; font-size:11px; border-width:1px; }
+  .mut { color:var(--mut); font-size:13px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:14px; }
+  table { width:100%; border-collapse:collapse; font-size:14px; }
+  th, td { padding:8px 6px; text-align:center; border-bottom:1px solid var(--line); }
+  th { color:var(--mut); font-weight:600; }
+  th:nth-child(2), td:nth-child(2) { text-align:left; }
+  .pts { color:#facc15; font-weight:800; font-size:17px; }
+  tr.first td { background:#14532d; }
+  .top2 td:first-child { border-left:3px solid var(--acc); }
+  .tim { display:flex; align-items:center; gap:8px; }
+  h2 { margin:22px 0 10px; font-size:16px; }
+  .match { display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid var(--line); }
+  .match .r { text-align:right; justify-content:flex-end; }
+  .skor { font-weight:700; min-width:60px; text-align:center; }
+  input, select { padding:6px 8px; background:var(--bg); color:var(--txt); border:1px solid var(--line); border-radius:6px; font:inherit; font-size:14px; }
+  input[type=color] { padding:2px; height:34px; width:60px; }
+  .skor input { width:52px; text-align:center; padding:4px; }
+  table input[type=number] { width:60px; text-align:center; padding:4px; }
+  .form { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:10px; margin:10px 0; }
+  .form input:not([type=color]), .form select { width:100%; }
+  button.btn { background:var(--acc); color:#052e16; border:0; padding:8px 14px; border-radius:8px; cursor:pointer; font-weight:600; }
+  button.sm { padding:4px 10px; font-size:12px; }
+  .bagan { display:grid; grid-template-columns:1fr 1fr; gap:30px; align-items:center; }
+  .bagan .card { margin-bottom:14px; }
+  .bagan .row { display:flex; justify-content:space-between; align-items:center; padding:6px 0; }
+  .menang { font-weight:700; color:var(--acc); }
+  #msg { color:#fca5a5; font-size:13px; margin-left:10px; }
+  #toast { position:fixed; bottom:16px; left:50%; transform:translateX(-50%); background:#17324a; color:#fff; padding:10px 16px; border-radius:8px; display:none; z-index:9; max-width:90%; }
+  .pgrid { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:14px; }
+  .pcard { padding:0; overflow:hidden; }
+  .pfoto { display:flex; align-items:center; justify-content:center; width:100%; aspect-ratio:3/4; object-fit:cover; object-position:top; font-size:44px; font-weight:700; color:rgba(255,255,255,.85); }
+  .pinfo { padding:10px 12px; }
+  .pno { display:inline-block; background:var(--acc); color:#052e16; font-weight:700; font-size:12px; border-radius:6px; padding:1px 7px; margin-right:6px; }
+  .ava { width:28px; height:28px; border-radius:50%; object-fit:cover; vertical-align:middle; margin-right:6px; }
+  .ts { display:grid; grid-template-columns:30px 1fr auto; gap:10px; align-items:center; padding:9px 16px; border-top:1px solid var(--line); }
+  .ts .ava { width:44px; height:44px; margin:0; }
+  .info { display:flex; gap:10px; align-items:center; padding:10px 16px; border-top:1px solid var(--line); font-size:13px; }
+  .info em { margin-left:auto; color:var(--mut); font-style:normal; white-space:nowrap; }
+  .dot { width:10px; height:10px; background:var(--acc); border-radius:50%; flex:none; }
+  @media (max-width:900px){ .two { grid-template-columns:1fr; } .hero h1 { font-size:34px; } }
+  @media (max-width:720px){
+    .app { grid-template-columns:56px 1fr; }
+    aside { padding:10px 4px; align-items:center; }
+    .brand { font-size:0; padding:4px 0 10px; } .brand .sh { font-size:30px; } .brand span:not(.sh) { display:none; }
+    nav button, .lnk { padding:10px; justify-content:center; font-size:18px; } nav .lb { display:none; }
+    .slogan { display:none; }
+    .top { padding:10px 12px; font-size:12px; } .who { padding:4px 10px; }
+    main { padding:10px; }
+    .hero { padding:16px 14px; } .hero small { font-size:13px; } .hero h1 { font-size:24px; } .hero i { font-size:12px; } .hero .ball { font-size:56px; right:10px; }
+    .stats { gap:6px; } .stat { flex-direction:column; text-align:center; gap:2px; padding:10px 4px; } .stat .ic { font-size:22px; } .stat b { font-size:20px; } .stat .mut { font-size:10px; }
+    .next .vs { font-size:22px; } .next .logo { width:52px; height:52px; font-size:18px; } .next { padding:12px 6px; font-size:12px; }
+    th, td { padding:7px 3px; font-size:12px; } .pts { font-size:14px; }
+    .ts { padding:8px 10px; } .ts .ava { width:34px; height:34px; } .info { flex-wrap:wrap; padding:8px 10px; }
+    .grid { grid-template-columns:1fr 1fr; } .pgrid { grid-template-columns:repeat(2,1fr); } .bagan { grid-template-columns:1fr; }
+    .match { font-size:12px; gap:4px; } footer { flex-direction:column; gap:4px; padding:10px 12px; font-size:11px; } }
+
+  /* ===== animasi ===== */
+  #bar { position:fixed; top:0; left:0; height:3px; width:0; background:linear-gradient(90deg,#22c55e,#facc15); z-index:20; opacity:0; transition:width .4s ease, opacity .3s; }
+  #bar.on { opacity:1; width:75%; transition:width 8s cubic-bezier(.1,.8,.2,1); }
+  #bar.fin { opacity:1; width:100%; transition:width .2s; }
+  .pg { animation:masuk .45s cubic-bezier(.2,.8,.2,1); }
+  @keyframes masuk { from { opacity:0; transform:translateX(34px); } to { opacity:1; transform:none; } }
+  .load { text-align:center; padding:70px 10px; }
+  .load .trk { position:relative; height:44px; max-width:420px; margin:0 auto; border-bottom:3px dashed var(--line); overflow:hidden; }
+  .load .rb { position:absolute; bottom:-2px; font-size:34px; animation:lari 1.6s linear infinite; }
+  @keyframes lari { from { left:-12%; transform:rotate(0); } to { left:100%; transform:rotate(720deg); } }
+  button { position:relative; overflow:hidden; transition:transform .12s ease, filter .15s, background .15s; }
+  button:hover { filter:brightness(1.12); }
+  button:active { transform:scale(.93); }
+  nav button:active { transform:scale(.9) translateX(3px); }
+  .klub { transition:transform .15s, border-color .15s; } .klub:hover { transform:translateY(-4px); } .klub:active { transform:scale(.96); }
+  .rip { position:absolute; border-radius:50%; background:rgba(255,255,255,.45); transform:scale(0); animation:rip .55s ease-out forwards; pointer-events:none; }
+  @keyframes rip { to { transform:scale(3); opacity:0; } }
+  #toast { animation:naik .3s ease; } @keyframes naik { from { opacity:0; transform:translate(-50%,16px); } }
+  @media (prefers-reduced-motion:reduce){ *, .pg, .rip { animation:none !important; transition:none !important; } }
+
+/* ===== Perbaikan responsif Liga Desa Tenjoayu ===== */
+html, body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden !important;
+}
+body { min-width: 0 !important; }
+.app {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: clip;
+}
+.wrap, main, #app, .card, .card.flat, .two, .stats, .grid, .pgrid {
+  min-width: 0;
+  max-width: 100%;
+}
+img, video, canvas, iframe { max-width: 100%; }
+table { max-width: 100%; }
+input, select, textarea, button { max-width: 100%; }
+.tim, .info, .ch { min-width: 0; }
+.tim { overflow-wrap: anywhere; }
+.hero h1 { overflow-wrap: anywhere; }
+
+/* HP: sidebar menjadi navigasi bawah, konten memakai seluruh lebar layar */
+@media (max-width: 720px) {
+  .app {
+    display: block !important;
+    width: 100% !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+  aside {
+    position: fixed !important;
+    z-index: 50;
+    left: 0; right: 0; bottom: 0; top: auto !important;
+    width: 100% !important;
+    height: 62px !important;
+    min-height: 62px;
+    padding: 5px 6px max(5px, env(safe-area-inset-bottom)) !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    border-right: 0 !important;
+    border-top: 1px solid var(--line);
+    overflow: hidden !important;
+  }
+  .brand, .slogan { display: none !important; }
+  nav {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 4px !important;
+    width: 100%;
+    min-width: 0;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  nav::-webkit-scrollbar { display: none; }
+  nav button, .lnk {
+    flex: 0 0 46px;
+    width: 46px;
+    min-width: 46px;
+    height: 46px;
+    padding: 6px !important;
+    margin: 0;
+    justify-content: center !important;
+    border-radius: 10px;
+    font-size: 20px !important;
+  }
+  nav button .lb, .lnk .lb { display: none !important; }
+  nav .sep { display: none !important; }
+  .wrap {
+    width: 100% !important;
+    min-width: 0 !important;
+    padding-bottom: calc(70px + env(safe-area-inset-bottom));
+  }
+  .top {
+    width: 100%;
+    padding: 9px 10px !important;
+    gap: 6px;
+    font-size: 11px !important;
+  }
+  #tgl { min-width: 0; overflow-wrap: anywhere; }
+  .who { white-space: nowrap; padding: 4px 8px !important; font-size: 11px; }
+  main {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 10px 9px !important;
+    overflow-x: clip !important;
+  }
+  footer { width: 100%; padding: 9px 10px !important; }
+  .hero { padding: 15px 13px !important; }
+  .hero h1 { font-size: clamp(22px, 6vw, 30px) !important; }
+  .hero .ball { font-size: 42px !important; right: 8px !important; opacity: .45; }
+  .stats { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 7px !important; }
+  .stat { min-width: 0; padding: 10px 5px !important; }
+  .two { grid-template-columns: minmax(0, 1fr) !important; gap: 9px !important; }
+  .next { grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) !important; }
+  .next > div { min-width: 0; overflow-wrap: anywhere; }
+  .next .logo { width: 42px !important; height: 42px !important; }
+  .grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 8px !important; }
+  .pgrid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 8px !important; }
+  .bagan { grid-template-columns: minmax(0, 1fr) !important; gap: 10px !important; }
+  .form { grid-template-columns: minmax(0, 1fr) !important; }
+  .form > *, .form label { min-width: 0; width: 100%; }
+  .form input, .form select, input, select, textarea { max-width: 100%; }
+  .match { grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) !important; gap: 4px !important; }
+  .match .tim { min-width: 0; overflow-wrap: anywhere; }
+  .match .skor { min-width: 44px; }
+  table {
+    width: 100% !important;
+    table-layout: fixed;
+    font-size: 10px !important;
+  }
+  th, td {
+    padding: 6px 2px !important;
+    font-size: 10px !important;
+    overflow-wrap: anywhere;
+  }
+  th:nth-child(2), td:nth-child(2) { width: 39%; }
+  .tim { gap: 4px; font-size: 10px; }
+  .logo.sm { width: 22px !important; height: 22px !important; flex: 0 0 22px; }
+  .pts { font-size: 12px !important; }
+  .card { padding: 11px !important; }
+  .card.flat { padding: 0 !important; }
+  .ch { padding: 10px !important; gap: 6px; font-size: 12px; }
+  .ch .link { padding: 4px 7px; font-size: 10px; white-space: nowrap; }
+  .ts { grid-template-columns: 22px minmax(0, 1fr) auto !important; gap: 5px !important; padding: 8px !important; }
+  .info { gap: 6px !important; padding: 8px !important; overflow-wrap: anywhere; }
+  .info em { white-space: normal !important; }
+  button.btn { padding: 7px 9px; font-size: 12px; }
+}
+
+
+/* ===== FIX FINAL: viewport HP & navigasi bawah terkunci ===== */
+html, body {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0 !important;
+  margin: 0;
+  overflow-x: hidden !important;
+}
+*, *::before, *::after { box-sizing: border-box; }
+@media (max-width: 720px) {
+  .app { display: block !important; width: 100% !important; min-width: 0 !important; }
+  .wrap, main, footer, .top { width: 100% !important; min-width: 0 !important; max-width: 100% !important; }
+  main { overflow-x: hidden !important; }
+  aside {
+    position: fixed !important;
+    inset: auto 0 0 0 !important;
+    width: 100vw !important;
+    height: calc(58px + env(safe-area-inset-bottom)) !important;
+    min-height: 0 !important;
+    padding: 4px 3px env(safe-area-inset-bottom) !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: stretch !important;
+    overflow: hidden !important;
+    z-index: 1000 !important;
+  }
+  nav#nav {
+    display: grid !important;
+    grid-template-columns: repeat(9, minmax(0, 1fr)) !important;
+    grid-auto-flow: column;
+    gap: 0 !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 100% !important;
+    overflow: hidden !important;
+    align-items: center !important;
+  }
+  nav#nav::-webkit-scrollbar { display: none !important; }
+  nav#nav button {
+    display: flex !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    height: 48px !important;
+    flex: none !important;
+    padding: 3px 0 !important;
+    margin: 0 !important;
+    gap: 0 !important;
+    justify-content: center !important;
+    align-items: center !important;
+    border-radius: 9px !important;
+    font-size: clamp(14px, 4.2vw, 19px) !important;
+    overflow: hidden !important;
+  }
+  nav#nav button > span:first-child {
+    display: block !important;
+    line-height: 1 !important;
+  }
+  nav#nav .lb, nav#nav .sep, nav#nav .lnk, nav#nav a { display: none !important; }
+  .wrap { padding-bottom: calc(68px + env(safe-area-inset-bottom)) !important; }
+  .top { gap: 5px !important; padding: 8px 9px !important; }
+  #tgl { min-width: 0 !important; overflow: hidden !important; text-overflow: ellipsis !important; white-space: nowrap !important; }
+  .who { max-width: 42vw !important; overflow: hidden !important; text-overflow: ellipsis !important; }
+  main { padding-left: 9px !important; padding-right: 9px !important; }
+  .hero, .card, .card.flat, .next { min-width: 0 !important; max-width: 100% !important; }
+  .hero .ball { right: 5px !important; }
+  .stats { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  .two { grid-template-columns: minmax(0, 1fr) !important; }
+  .match, .next { min-width: 0 !important; }
+  table { table-layout: fixed !important; width: 100% !important; }
+  th, td { overflow-wrap: anywhere !important; }
+}
+
+
+
+/* ===== PENYESUAIAN NAVIGASI HP: 9 ikon bisa digeser, konten tetap selebar layar ===== */
+@media (max-width: 720px) {
+  html, body {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+  }
+  .app, .wrap, main, footer, .top, #app {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+  }
+  .app { display: block !important; }
+  main { padding-left: 10px !important; padding-right: 10px !important; overflow-x: hidden !important; }
+
+  /* Navigasi bawah: ikon berderet dan dapat digeser ke kiri/kanan */
+  aside {
+    position: fixed !important;
+    left: 0 !important; right: 0 !important; bottom: 0 !important; top: auto !important;
+    width: 100% !important;
+    height: calc(64px + env(safe-area-inset-bottom)) !important;
+    min-height: 0 !important;
+    padding: 4px 6px env(safe-area-inset-bottom) !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    overflow: hidden !important;
+    z-index: 1000 !important;
+  }
+  nav#nav {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    justify-content: flex-start !important;
+    align-items: center !important;
+    gap: 7px !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 100% !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none !important;
+    touch-action: pan-x;
+  }
+  nav#nav::-webkit-scrollbar { display: none !important; }
+  nav#nav button, nav#nav .lnk, nav#nav a {
+    display: flex !important;
+    flex: 0 0 52px !important;
+    width: 52px !important;
+    min-width: 52px !important;
+    max-width: 52px !important;
+    height: 48px !important;
+    min-height: 48px !important;
+    padding: 4px !important;
+    margin: 0 !important;
+    justify-content: center !important;
+    align-items: center !important;
+    border-radius: 10px !important;
+    font-size: 21px !important;
+    overflow: hidden !important;
+  }
+  nav#nav .lb { display: none !important; }
+  nav#nav .sep { display: none !important; }
+  .wrap { padding-bottom: calc(76px + env(safe-area-inset-bottom)) !important; }
+
+  /* Isi setiap menu mengikuti lebar layar HP */
+  .hero, .card, .card.flat, .two, .stats, .grid, .pgrid, .next,
+  .match, .bagan, .form, .ts, .info, table {
+    min-width: 0 !important;
+    max-width: 100% !important;
+  }
+  .hero { width: 100% !important; }
+  .stats { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  .two { grid-template-columns: minmax(0, 1fr) !important; }
+  .grid, .pgrid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  .bagan, .form { grid-template-columns: minmax(0, 1fr) !important; }
+  .next { grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) !important; }
+  table { width: 100% !important; table-layout: fixed !important; }
+  th, td { overflow-wrap: anywhere !important; }
+  img, video, canvas, iframe { max-width: 100% !important; }
+  input, select, textarea { max-width: 100% !important; min-width: 0 !important; }
+}
+
+
+/* ===== FINAL NAV: seluruh 12 ikon dapat digeser pada HP ===== */
+@media (max-width: 720px) {
+  nav#nav {
+    display: flex !important;
+    flex-flow: row nowrap !important;
+    justify-content: flex-start !important;
+    align-items: center !important;
+    gap: 7px !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    overscroll-behavior-x: contain !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+    touch-action: pan-x !important;
+  }
+  nav#nav::-webkit-scrollbar { display: none !important; }
+  nav#nav > button,
+  nav#nav > a.lnk {
+    display: flex !important;
+    flex: 0 0 52px !important;
+    width: 52px !important;
+    min-width: 52px !important;
+    max-width: 52px !important;
+    height: 48px !important;
+    min-height: 48px !important;
+    margin: 0 !important;
+    padding: 4px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 10px !important;
+    white-space: nowrap !important;
+  }
+  nav#nav > a.lnk { text-decoration: none !important; }
+  nav#nav .lb, nav#nav .sep { display: none !important; }
+  aside { overflow: hidden !important; }
+  html, body, .app, .wrap, main, #app { max-width: 100% !important; min-width: 0 !important; overflow-x: hidden !important; }
+  .wrap { padding-bottom: calc(76px + env(safe-area-inset-bottom)) !important; }
+}
+
+
+
+/* ===== FIX LEBAR HALAMAN HP / ANDROID WEBVIEW ===== */
+@media (max-width: 900px), (pointer: coarse) {
+  html, body {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    overflow-x: hidden !important;
+  }
+  .app {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    overflow-x: clip !important;
+  }
+  .wrap, main, #app, footer, .top {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+  }
+  main {
+    margin: 0 !important;
+    padding: 12px 10px !important;
+    overflow-x: hidden !important;
+  }
+  #app, #app > *, .card, .card.flat, .hero, .two, .stats, .grid, .pgrid, .next, .bagan, .form {
+    min-width: 0 !important;
+    max-width: 100% !important;
+  }
+  .hero { width: 100% !important; padding: 16px 14px !important; }
+  .hero h1 { font-size: clamp(22px, 6vw, 30px) !important; overflow-wrap: anywhere !important; }
+  .hero .ball { right: 7px !important; font-size: clamp(38px, 12vw, 58px) !important; opacity: .45 !important; }
+  .stats { display: grid !important; grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 8px !important; }
+  .stat { min-width: 0 !important; padding: 10px 5px !important; flex-direction: column !important; text-align: center !important; }
+  .two { display: grid !important; grid-template-columns: minmax(0, 1fr) !important; gap: 10px !important; }
+  .grid, .pgrid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 8px !important; }
+  .bagan, .form { grid-template-columns: minmax(0, 1fr) !important; gap: 8px !important; }
+  .next { grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) !important; gap: 4px !important; padding: 12px 5px !important; }
+  .next .logo { width: 46px !important; height: 46px !important; font-size: 16px !important; }
+  .tim, .info, .ch, .match, .ts { min-width: 0 !important; overflow-wrap: anywhere !important; }
+  .tim { font-size: clamp(10px, 3vw, 13px) !important; }
+  table { width: 100% !important; max-width: 100% !important; table-layout: fixed !important; }
+  th, td { padding: 7px 3px !important; font-size: clamp(10px, 2.8vw, 12px) !important; overflow-wrap: anywhere !important; }
+  img, video, canvas, iframe { max-width: 100% !important; }
+  input, select, textarea { min-width: 0 !important; max-width: 100% !important; }
+  .top { gap: 6px !important; padding: 8px 10px !important; }
+  #tgl { min-width: 0 !important; overflow: hidden !important; text-overflow: ellipsis !important; white-space: nowrap !important; }
+  .who { max-width: 42vw !important; overflow: hidden !important; text-overflow: ellipsis !important; white-space: nowrap !important; }
+  footer { flex-direction: column !important; gap: 4px !important; padding: 10px !important; }
+  /* Navigasi bawah: hanya bar ikon yang boleh scroll horizontal */
+  aside {
+    position: fixed !important; left: 0 !important; right: 0 !important; bottom: 0 !important; top: auto !important;
+    width: 100% !important; max-width: 100% !important;
+    height: calc(64px + env(safe-area-inset-bottom)) !important; min-height: 0 !important;
+    padding: 4px 6px env(safe-area-inset-bottom) !important;
+    display: flex !important; flex-direction: row !important; align-items: center !important;
+    overflow: hidden !important; z-index: 1000 !important;
+  }
+  .brand, .slogan { display: none !important; }
+  nav#nav {
+    display: flex !important; flex-flow: row nowrap !important; justify-content: flex-start !important; align-items: center !important;
+    gap: 7px !important; width: 100% !important; min-width: 0 !important; height: 100% !important;
+    overflow-x: auto !important; overflow-y: hidden !important;
+    overscroll-behavior-x: contain !important; -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important; touch-action: pan-x !important;
+  }
+  nav#nav::-webkit-scrollbar { display: none !important; }
+  nav#nav > button, nav#nav > a.lnk {
+    display: flex !important; flex: 0 0 50px !important; width: 50px !important; min-width: 50px !important; max-width: 50px !important;
+    height: 48px !important; min-height: 48px !important; margin: 0 !important; padding: 4px !important;
+    align-items: center !important; justify-content: center !important; border-radius: 10px !important; white-space: nowrap !important;
+  }
+  nav#nav .lb, nav#nav .sep { display: none !important; }
+  .wrap { padding-bottom: calc(76px + env(safe-area-inset-bottom)) !important; }
+}
+
+
+
+/* =====================================================
+   LIGA DESA TENJOAYU — BLUE UI + MOTION SYSTEM v1
+   Lapisan visual baru; fungsi dan struktur data lama dipertahankan.
+   ===================================================== */
+:root {
+  --bg:#061426;
+  --side:#081b31;
+  --card:#0b2038;
+  --line:#17436a;
+  --txt:#edf6ff;
+  --mut:#9bb5ce;
+  --acc:#1597f6;
+  --acc2:#0874c9;
+  --blue-glow:rgba(21,151,246,.28);
+}
+body {
+  background: radial-gradient(ellipse at 75% -15%, #103b63 0%, #061426 48%, #040d19 100%);
+}
+aside, .top, footer { background:rgba(5,20,37,.96); }
+aside { border-right-color:rgba(39,143,220,.28); }
+.brand span:not(.sh), .hero h1 span, .slogan b, .menang { color:#39b8ff; }
+nav button { transition:background .24s ease, transform .22s cubic-bezier(.2,.8,.2,1), box-shadow .24s ease; }
+nav button.on {
+  background:linear-gradient(110deg,#0874c9,#159cf5 70%,#36bdff);
+  box-shadow:0 7px 24px rgba(0,137,235,.22), inset 0 1px rgba(255,255,255,.18);
+}
+nav button:hover, .lnk:hover { background:rgba(21,151,246,.13); }
+.card, .who {
+  background:linear-gradient(145deg,rgba(13,39,66,.96),rgba(7,25,45,.97));
+  border-color:rgba(44,137,203,.28);
+  box-shadow:0 9px 28px rgba(0,0,0,.13), inset 0 1px rgba(255,255,255,.025);
+}
+.card { transition:transform .25s ease, border-color .25s ease, box-shadow .25s ease; }
+.card:not(.flat):hover { border-color:rgba(46,173,255,.55); box-shadow:0 12px 30px rgba(0,105,190,.13); }
+.hero {
+  background:linear-gradient(105deg,rgba(4,17,32,.98) 5%,rgba(7,43,75,.92) 100%);
+  border-color:rgba(33,151,231,.42);
+  box-shadow:inset 0 0 42px rgba(0,132,220,.10);
+}
+.next { background:linear-gradient(145deg,#0b2d4c,#09213a 65%,#0b3658); }
+.link, button.btn {
+  color:#fff;
+  background:linear-gradient(115deg,#0877ca,#159df5);
+  box-shadow:0 5px 15px rgba(0,125,220,.18), inset 0 1px rgba(255,255,255,.18);
+}
+.jam { background:linear-gradient(110deg,#075c9e,#087fd1); color:#fff; }
+tr.first td { background:rgba(0,112,190,.30); }
+.top2 td:first-child { border-left-color:#25a9ff; }
+.pts { color:#ffd166; }
+.dot { background:#21a8ff; box-shadow:0 0 10px rgba(33,168,255,.45); }
+#bar { background:linear-gradient(90deg,#0874c9,#31c4ff,#9be7ff); box-shadow:0 0 12px rgba(49,196,255,.55); }
+#toast { background:linear-gradient(120deg,#0b3153,#0b5b91); border:1px solid rgba(80,184,255,.35); box-shadow:0 12px 35px rgba(0,0,0,.35); }
+.rip { background:rgba(117,207,255,.42); }
+
+/* Intro screen saat website pertama dibuka */
+#bootScreen {
+  position:fixed; inset:0; z-index:1000; display:flex; align-items:center; justify-content:center;
+  background:radial-gradient(ellipse at 50% 40%,#103c63 0%,#06182c 48%,#030b15 100%);
+  opacity:1; visibility:visible; transition:opacity .55s ease, visibility .55s ease;
+}
+#bootScreen.done { opacity:0; visibility:hidden; pointer-events:none; }
+.boot-inner { text-align:center; padding:28px; animation:bootRise .75s cubic-bezier(.2,.8,.2,1) both; }
+.boot-mark { width:82px; height:82px; margin:0 auto 18px; border:1px solid rgba(89,194,255,.55); border-radius:26px; display:grid; place-items:center; font-size:48px; color:#dff5ff; background:linear-gradient(145deg,rgba(21,151,246,.25),rgba(4,23,43,.9)); box-shadow:0 0 38px rgba(21,151,246,.24),inset 0 1px rgba(255,255,255,.2); animation:bootPulse 1.8s ease-in-out infinite; }
+.boot-title { font-weight:850; letter-spacing:1.4px; font-size:20px; }
+.boot-sub { color:#9bbbd7; font-size:12px; margin-top:5px; letter-spacing:2px; }
+.boot-track { width:190px; height:3px; margin:22px auto 0; background:rgba(130,190,230,.17); border-radius:9px; overflow:hidden; }
+.boot-track:after { content:""; display:block; height:100%; width:42%; border-radius:9px; background:linear-gradient(90deg,#0874c9,#65d4ff); animation:bootLoad 1.25s ease-in-out infinite; }
+@keyframes bootRise { from {opacity:0;transform:translateY(18px) scale(.96)} to {opacity:1;transform:none} }
+@keyframes bootPulse { 50% { transform:translateY(-5px); box-shadow:0 0 48px rgba(21,151,246,.4),inset 0 1px rgba(255,255,255,.2) } }
+@keyframes bootLoad { from {transform:translateX(-110%)} to {transform:translateX(260%)} }
+
+/* Halaman, kartu, dan tombol */
+.pg { animation:pageReveal .42s cubic-bezier(.18,.75,.25,1) both; }
+@keyframes pageReveal { from {opacity:0;transform:translateY(12px);filter:blur(3px)} to {opacity:1;transform:none;filter:blur(0)} }
+.card, .stat, .ts, .info { animation:softReveal .42s ease both; }
+@keyframes softReveal { from {opacity:0;transform:translateY(8px)} to {opacity:1;transform:translateY(0)} }
+button, .lnk, a { -webkit-tap-highlight-color:transparent; }
+button { transition:transform .18s cubic-bezier(.2,.8,.2,1),filter .2s,box-shadow .2s; }
+button:hover { filter:brightness(1.12); }
+button:active { transform:scale(.96); }
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible { outline:2px solid #56c5ff; outline-offset:2px; }
+button.is-loading { pointer-events:none; opacity:.82; }
+button.is-loading:after { content:""; display:inline-block; width:11px; height:11px; margin-left:8px; vertical-align:-1px; border:2px solid rgba(255,255,255,.35); border-top-color:#fff; border-radius:50%; animation:miniSpin .65s linear infinite; }
+@keyframes miniSpin { to {transform:rotate(360deg)} }
+.login-panel { position:relative; overflow:hidden; border-color:rgba(43,164,245,.45); background:linear-gradient(145deg,#0d2b49,#081a2e); }
+.login-panel:before { content:""; position:absolute; width:190px; height:190px; border-radius:50%; right:-90px; top:-110px; background:rgba(20,151,246,.12); filter:blur(2px); pointer-events:none; }
+.login-heading { display:flex; align-items:center; gap:12px; margin-bottom:14px; }
+.login-icon { width:42px; height:42px; display:grid; place-items:center; border-radius:13px; font-size:22px; background:linear-gradient(145deg,#0874c9,#20aaff); box-shadow:0 7px 20px rgba(0,132,220,.25); }
+.login-panel input[type=password] { min-width:220px; padding:10px 12px; border-color:#24557c; background:#06172a; }
+.login-panel .mut { line-height:1.6; }
+@media (max-width:720px) {
+  .boot-mark { width:70px; height:70px; font-size:40px; }
+  .login-panel input[type=password] { width:100%; min-width:0; margin-bottom:8px; }
+  .login-panel button { margin:3px 3px 3px 0; }
+}
+@media (prefers-reduced-motion:reduce) {
+  #bootScreen, .boot-inner, .boot-mark, .boot-track:after, .pg, .card, .stat, .ts, .info, button, .lnk { animation:none !important; transition:none !important; }
+}
+
+
+body.motion-off *,body.motion-off *:before,body.motion-off *:after{animation:none!important;transition:none!important}
+/* ===== Header interaktif + latar stadion atmosferik ===== */
+.topbar{position:sticky;top:0;z-index:80;display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:66px;padding:10px 22px;background:rgba(4,17,32,.88);border-bottom:1px solid rgba(57,166,238,.24);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+.topbar-left,.topbar-actions{display:flex;align-items:center;gap:10px;min-width:0}.topbar-actions{gap:9px}.top-date{display:flex;align-items:center;gap:9px;color:#c4d8eb;font-size:13px;min-width:0}.top-date #tgl{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.live-dot{width:8px;height:8px;border-radius:50%;background:#25baff;box-shadow:0 0 12px #1597f6;flex:none}.live-label{font-weight:800;color:#f2f8ff}.date-sep{color:#547b9e}
+.icon-btn{position:relative;width:40px;height:40px;flex:none;display:grid;place-items:center;border:1px solid rgba(76,166,231,.28);border-radius:50%;color:#eaf6ff;background:linear-gradient(145deg,rgba(19,64,101,.82),rgba(5,25,46,.92));box-shadow:inset 0 1px rgba(255,255,255,.12),0 5px 16px rgba(0,0,0,.18);cursor:pointer}
+.icon-btn:hover,.profile-btn:hover{border-color:rgba(77,190,255,.72);box-shadow:0 0 20px rgba(21,151,246,.22),inset 0 1px rgba(255,255,255,.16)}
+.svg-icon{width:19px;height:19px;display:grid;place-items:center}.svg-icon svg{width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.notif-count{position:absolute;right:-3px;top:-4px;min-width:17px;height:17px;padding:0 4px;border-radius:20px;background:#ef4444;color:white;font-size:10px;font-weight:800;display:grid;place-items:center;border:2px solid #071a2e}.notif-count[hidden]{display:none}
+.head-action-wrap{position:relative}.profile-btn{height:42px;display:flex;align-items:center;gap:8px;padding:4px 10px 4px 5px;border:1px solid rgba(76,166,231,.28);border-radius:24px;background:linear-gradient(145deg,rgba(19,64,101,.82),rgba(5,25,46,.92));color:#f1f8ff;cursor:pointer}.profile-avatar{width:30px;height:30px;display:grid;place-items:center;border-radius:50%;background:linear-gradient(145deg,#1597f6,#07518e);color:white;font-size:13px;font-weight:800}.profile-name{font-size:12px;font-weight:700;max-width:115px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.chevron{font-size:15px;color:#9fc9e8}
+.head-panel{position:absolute;right:0;top:calc(100% + 11px);width:min(330px,calc(100vw - 24px));padding:13px;border:1px solid rgba(65,164,231,.35);border-radius:15px;background:linear-gradient(150deg,rgba(10,37,63,.98),rgba(4,19,36,.99));box-shadow:0 18px 55px rgba(0,0,0,.45),0 0 25px rgba(0,120,210,.12);color:#eaf6ff;animation:panelIn .18s ease both;z-index:120}.head-panel[hidden]{display:none}.head-panel h3{font-size:13px;margin:0 0 10px;color:#b9ddf7}.head-panel .panel-empty{padding:13px 8px;color:#9bb5ce;font-size:12px;text-align:center}.head-item{display:flex;gap:10px;align-items:flex-start;padding:9px 3px;border-top:1px solid rgba(91,154,199,.15);font-size:12px}.head-item:first-of-type{border-top:0}.head-item .item-dot{width:8px;height:8px;margin-top:4px;border-radius:50%;background:#20a9ff;box-shadow:0 0 9px #1597f6;flex:none}.head-item small{display:block;color:#91aec8;margin-top:3px}.panel-action{width:100%;text-align:left;padding:9px 10px;border:1px solid rgba(89,164,217,.18);border-radius:9px;background:rgba(20,70,110,.25);color:#eaf6ff;margin-top:6px;font-size:12px;cursor:pointer}.panel-action:hover{background:rgba(21,151,246,.22)}.setting-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 2px;border-top:1px solid rgba(91,154,199,.15);font-size:12px}.setting-row:first-of-type{border-top:0}.setting-row input{accent-color:#1597f6;width:17px;height:17px}.profile-meta{font-size:12px;color:#a9c4dc;padding:3px 2px 9px}.profile-meta strong{display:block;color:#fff;font-size:14px;margin-bottom:3px}
+.app.sidebar-collapsed{grid-template-columns:78px minmax(0,1fr)}.app.sidebar-collapsed aside{padding-left:8px;padding-right:8px}.app.sidebar-collapsed .brand{font-size:0}.app.sidebar-collapsed .brand .sh{font-size:38px}.app.sidebar-collapsed nav button,.app.sidebar-collapsed .lnk{justify-content:center;padding:11px 5px}.app.sidebar-collapsed nav .lb,.app.sidebar-collapsed .lnk .lb,.app.sidebar-collapsed .slogan{display:none}.app.sidebar-collapsed .sep{margin:8px 0}
+body.light-mode{--bg:#eaf3fb;--side:#f5f9fd;--card:#fff;--line:#c8dced;--txt:#102b43;--mut:#58738b;background:radial-gradient(ellipse at 75% -15%,#d5edff 0%,#edf5fc 50%,#e5eff8 100%);color:var(--txt)}body.light-mode aside,body.light-mode .topbar,body.light-mode footer{background:rgba(244,249,253,.94);color:#183650;border-color:#c8dced}body.light-mode .top-date,body.light-mode .live-label{color:#244764}body.light-mode .icon-btn,body.light-mode .profile-btn{background:linear-gradient(145deg,#fff,#e5f2fc);color:#14517e;border-color:#b8d6eb;box-shadow:0 4px 14px rgba(25,91,140,.10)}body.light-mode .card,body.light-mode .who{background:linear-gradient(145deg,#fff,#f2f8fd);color:#15334c;border-color:#c5dcec}body.light-mode .head-panel{background:linear-gradient(150deg,#fff,#edf6fd);color:#15334c;border-color:#b8d6eb}body.light-mode .head-panel h3,body.light-mode .profile-meta{color:#41647f}body.light-mode .profile-meta strong{color:#15334c}body.light-mode .head-item{border-color:#dceaf4}body.light-mode .panel-action{color:#15334c;background:#eaf5fd;border-color:#c9e0f0}body.light-mode input,body.light-mode select{background:#fff;color:#15334c;border-color:#b8d6eb}
+.wrap{position:relative;isolation:isolate}.wrap:before{content:"";position:fixed;z-index:-1;inset:0 0 0 230px;pointer-events:none;background:radial-gradient(ellipse at 78% 8%,rgba(0,119,220,.17),transparent 34%),radial-gradient(ellipse at 45% 58%,rgba(0,72,135,.12),transparent 45%),linear-gradient(180deg,rgba(4,18,34,.18),rgba(2,12,24,.38))}.app.sidebar-collapsed .wrap:before{left:78px}
+@keyframes panelIn{from{opacity:0;transform:translateY(-5px) scale(.98)}to{opacity:1;transform:none}}
+@media(max-width:720px){aside.mobile-nav-expanded{height:auto!important;max-height:45vh!important;align-items:flex-start!important;padding-top:8px!important;padding-bottom:calc(8px + env(safe-area-inset-bottom))!important}aside.mobile-nav-expanded nav#nav{flex-wrap:wrap!important;overflow-y:auto!important;align-content:flex-start!important}aside.mobile-nav-expanded nav#nav>button,aside.mobile-nav-expanded nav#nav>a.lnk{flex:0 0 calc(25% - 6px)!important;width:calc(25% - 6px)!important;max-width:none!important}aside.mobile-nav-expanded nav#nav .lb{display:block!important;font-size:9px!important;white-space:normal!important}aside.mobile-nav-expanded nav#nav>button,aside.mobile-nav-expanded nav#nav>a.lnk{flex-direction:column!important;gap:2px!important;font-size:16px!important;height:48px!important}.topbar{min-height:58px;padding:7px 9px;gap:6px}.topbar-left,.topbar-actions{gap:5px}.icon-btn{width:34px;height:34px}.svg-icon{width:17px;height:17px}.top-date{gap:5px;font-size:10px}.live-label,.date-sep{display:none}.top-date #tgl{max-width:130px}.profile-btn{height:35px;padding:3px 7px 3px 3px;gap:5px}.profile-avatar{width:27px;height:27px}.profile-name{max-width:65px;font-size:10px}.chevron{font-size:12px}.head-panel{position:fixed;top:64px;right:8px;width:min(320px,calc(100vw - 16px));max-height:65vh;overflow:auto}.menu-toggle{display:grid}.app.sidebar-collapsed{grid-template-columns:minmax(0,1fr)}.app.sidebar-collapsed aside{padding:4px 6px max(4px,env(safe-area-inset-bottom))!important}.app.sidebar-collapsed nav button .lb,.app.sidebar-collapsed .lnk .lb{display:none!important}.wrap:before{inset:0}}
+@media(prefers-reduced-motion:reduce){.head-panel{animation:none}}
+
+
+/* Latar stadion atmosferik: dibuat dengan CSS agar ringan dan tidak butuh file gambar tambahan. */
+body { background:radial-gradient(ellipse at 76% 4%,rgba(0,133,255,.20),transparent 34%),radial-gradient(ellipse at 38% 100%,rgba(0,83,170,.15),transparent 43%),#030b18; }
+.app { background:linear-gradient(135deg,rgba(3,15,31,.98),rgba(2,9,20,.98)); }
+.wrap:before { background:radial-gradient(ellipse at 50% 0%,rgba(13,119,211,.18),transparent 36%),radial-gradient(ellipse at 50% 100%,rgba(0,105,190,.12),transparent 48%),linear-gradient(180deg,rgba(3,17,34,.08),rgba(1,9,20,.28)); }
+.wrap:after { content:"";position:fixed;z-index:-1;pointer-events:none;inset:66px 0 0 230px;opacity:.34;background:radial-gradient(ellipse at 50% 9%,rgba(54,174,255,.36),transparent 2%,transparent 25%),repeating-linear-gradient(90deg,transparent 0 7%,rgba(96,190,255,.09) 7.1% 7.2%,transparent 7.3% 14%),linear-gradient(180deg,transparent 0 55%,rgba(10,90,150,.08) 56%,transparent 57%),radial-gradient(ellipse at 50% 100%,rgba(0,120,210,.18),transparent 45%);mask-image:linear-gradient(to bottom,#000,transparent 78%);}
+.app.sidebar-collapsed .wrap:after { left:78px; }
+nav button.on { background:linear-gradient(110deg,#0878d5,#12b5ff);box-shadow:0 5px 22px rgba(0,145,255,.25); }
+.link,button.btn { background:linear-gradient(110deg,#0878d5,#16b7ff);color:#fff; }
+.next { background:linear-gradient(130deg,#061d37,#07518b); }
+.jam { background:#086fc0;color:#fff; }
+tr.first td { background:rgba(0,116,207,.24); }
+.pts,.menang,.slogan b,.hero h1 span { color:#38baff; }
+.pno { background:#087fd5;color:#fff; }
+@media(max-width:720px){.wrap:after{inset:58px 0 62px 0}.app.sidebar-collapsed .wrap:after{left:0}}
+
+
+.nav-ico{width:22px;height:22px;display:inline-grid;place-items:center;flex:none;color:#b8dfff}.nav-ico svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}.nav button.on .nav-ico{color:#fff}.hero{background:linear-gradient(105deg,rgba(2,12,27,.97) 25%,rgba(0,69,130,.86) 100%),radial-gradient(ellipse at 80% 15%,rgba(25,157,255,.32),transparent 50%);border-color:#1769a7}.hero h1 span{color:#27baff}
+
+/* ===== Penyelarasan ikon seluruh halaman + kartu pemain ringkas ===== */
+.ui-icon{display:inline-flex;width:1.18em;height:1.18em;align-items:center;justify-content:center;vertical-align:-.19em;color:#43baff;flex:none;margin-right:.22em}
+.ui-icon svg{width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.nav-ico svg{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.nav-ico{color:#8fd5ff}
+nav button.on .nav-ico{color:#fff}
+.stat .ic .ui-icon{width:30px;height:30px;margin:0;color:#39baff}
+.ch .ui-icon,.card h2 .ui-icon,.card h3 .ui-icon{color:#55c2ff}
+button .ui-icon{margin-right:5px}
+/* Kartu pemain dibuat lebih kecil dan rapat, tanpa mengubah data/fungsi pemain. */
+.pgrid{grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:10px}
+.pcard{border-radius:10px;min-width:0;transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}
+.pcard:hover{transform:translateY(-3px);border-color:#269fe8;box-shadow:0 8px 22px rgba(0,137,220,.13)}
+.pfoto{aspect-ratio:4/4.6;max-height:148px;font-size:30px}
+.pinfo{padding:7px 8px;line-height:1.3}
+.pinfo b{font-size:12px;display:inline-block;overflow-wrap:anywhere}
+.pinfo .mut{font-size:11px;margin-top:3px}
+.pno{font-size:10px;padding:1px 5px;margin-right:4px}
+@media(max-width:720px){
+ .pgrid{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+ .pfoto{max-height:120px;aspect-ratio:4/4.8}
+ .pinfo{padding:6px}
+ .pinfo b{font-size:11px}
+ .pinfo .mut{font-size:10px}
+}
+@media(max-width:380px){.pgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+</style>
+</head>
+<body>
+<div id="bootScreen" aria-label="Memuat Liga Desa Tenjoayu">
+  <div class="boot-inner">
+    <div class="boot-mark">&#9917;</div>
+    <div class="boot-title">LIGA DESA TENJOAYU</div>
+    <div class="boot-sub">SATU LAPANGAN · SATU SEMANGAT</div>
+    <div class="boot-track"></div>
+  </div>
+</div>
+<script>
+var ERRS = [];
+function tampilErr(t) { var a = document.getElementById('app'); if (a) { a.style.whiteSpace = 'pre-wrap'; a.textContent = t; } }
+window.onerror = function (m, s, l, c) { ERRS.push('Error JS: ' + m + ' (baris ' + l + ', kolom ' + c + ')'); tampilErr(ERRS.join(' | ')); return false; };
+window.addEventListener('unhandledrejection', function (e) { ERRS.push('Error: ' + ((e.reason && e.reason.message) || e.reason)); tampilErr(ERRS.join(' | ')); });
+setTimeout(function () {
+  if (window.D || ERRS.length) return;
+  tampilErr(window.SKRIP_JALAN ? 'Skrip utama jalan, tapi data belum dimuat (cek google.script.run / izin deployment).' : 'Skrip utama TIDAK berjalan (error sintaks atau data awal rusak).');
+}, 8000);
+</script>
+<div id="bar"></div>
+<div class="app">
+  <aside>
+    <div class="brand"><span class="sh">&#128737;&#65039;</span>LIGA DESA<br><span>TENJOAYU</span></div>
+    <nav id="nav"></nav>
+    <div class="slogan">Satu Lapangan,<br>Satu Semangat,<br><b>Menuju Juara!</b></div>
+  </aside>
+  <div class="wrap">
+    <div class="topbar" id="topbar">
+      <div class="topbar-left">
+        <button class="icon-btn menu-toggle" id="menuToggle" type="button" aria-label="Buka atau tutup menu" title="Menu" onclick="toggleSidebar()"><span class="svg-icon" id="menuGlyph"></span></button>
+        <div class="top-date"><span class="live-dot"></span><span class="live-label">Liga Desa</span><span class="date-sep">|</span><span id="tgl"></span></div>
+      </div>
+      <div class="topbar-actions">
+        <div class="head-action-wrap">
+          <button class="icon-btn" type="button" aria-label="Notifikasi" title="Notifikasi" onclick="toggleHeadPanel('notifPanel')"><span class="svg-icon" id="bellGlyph"></span><span class="notif-count" id="notifCount" hidden>0</span></button>
+          <div class="head-panel" id="notifPanel" hidden></div>
+        </div>
+        <div class="head-action-wrap">
+          <button class="icon-btn" type="button" aria-label="Pengaturan" title="Pengaturan" onclick="toggleHeadPanel('settingsPanel')"><span class="svg-icon" id="settingsGlyph"></span></button>
+          <div class="head-panel settings-panel" id="settingsPanel" hidden></div>
+        </div>
+        <button class="icon-btn theme-toggle" id="themeToggle" type="button" aria-label="Ganti mode tampilan" title="Ganti mode tampilan" onclick="toggleTheme()"><span class="svg-icon" id="themeGlyph"></span></button>
+        <div class="head-action-wrap profile-wrap">
+          <button class="profile-btn" type="button" aria-label="Menu profil" onclick="toggleHeadPanel('profilePanel')"><span class="profile-avatar" id="profileAvatar"></span><span class="profile-name" id="profileName">Pengunjung</span><span class="chevron">⌄</span></button>
+          <div class="head-panel profile-panel" id="profilePanel" hidden></div>
+        </div>
+      </div>
+    </div>
+    <main id="app"><div class="load"><div class="trk"><span class="rb">&#9917;</span></div><p class="mut">Menyiapkan Liga Desa Tenjoayu...</p></div></main>
+    <footer><span>Liga Desa Tenjoayu &copy; <span id="thn"></span> | Sepak Bola untuk Desa Kita</span><i>Powered by Panitia Liga &middot; <a id="lnkAdmin" href="#" target="_top" hidden style="color:inherit;opacity:.65;text-decoration:none">Admin</a></i></footer>
+  </div>
+</div>
+<div id="toast"></div>
+<script>
+window.SKRIP_JALAN = true;
+const ADMIN_PAGE = <?!= ADMIN ? 'true' : 'false' ?>;
+setTimeout(selesaiIntro, 12000);
+let D = null, tab = ADMIN_PAGE ? 'admin' : 'beranda', klubAktif = null;
+const SEMUA_TABS = [['beranda','&#127968;','Dashboard'],['klub','&#128737;&#65039;','Data Klub'],['pemain','&#128101;','Data Pemain'],['jadwal','&#128197;','Jadwal'],['hasil','&#9917;','Hasil Pertandingan'],['klasemen','&#127942;','Klasemen'],['bagan','&#127381;','Bagan'],['topskor','&#129351;','Top Score'],['admin','&#9881;&#65039;','Kelola']];
+// halaman publik TIDAK punya tab admin; halaman ?page=Admin HANYA punya tab admin
+const TABS = ADMIN_PAGE ? SEMUA_TABS.filter(t => t[0] === 'admin') : SEMUA_TABS.filter(t => t[0] !== 'admin');
+let PW = '', MULAI = '', gKlub = 'K1', ROLE = null, RK = null, edK = null, edP = null, konfirm = null;
+let modePilih = null, urutTgl = false, DAFTAR = [], APPURL = '', edMassal = false;
+
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+// Ikon UI terpadu: semua ikon berbasis emoji/entity pada halaman dirender sebagai SVG biru.
+const UI_ICON_SVG = {
+  '127968':'<path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1Z"/>',
+  '128737':'<path d="M12 2 20 5v6c0 5-3.4 8.5-8 11-4.6-2.5-8-6-8-11V5Z"/><path d="m8.5 12 2.2 2.2 4.8-5"/>',
+  '128101':'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 21a6.5 6.5 0 0 1 13 0M16 5.5a3 3 0 0 1 0 5.8M18 15a5 5 0 0 1 3.5 5"/>',
+  '128197':'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4m10-4v4M3 10h18M8 14h3m-3 3h3m3-3h3"/>',
+  '9917':'<circle cx="12" cy="12" r="9"/><path d="m12 7 3 2-1 4h-4l-1-4Zm-3 2-3 1m8 0 4 1m-8 3-2 4m5-4 2 4"/>',
+  '127942':'<path d="M7 4h10v5a5 5 0 0 1-10 0Z"/><path d="M7 6H4v2a4 4 0 0 0 4 4m9-6h3v2a4 4 0 0 1-4 4M12 14v5m-4 2h8m-7-2h6"/>',
+  '127381':'<path d="M4 4h16v16H4zM8 8h8M8 12h5M8 16h8"/>',
+  '129351':'<circle cx="12" cy="8" r="5"/><path d="m8 12-2 9 6-3 6 3-2-9"/>',
+  '9881':'<circle cx="12" cy="12" r="3"/><path d="m19 13 2 1-2 4-2-1a8 8 0 0 1-2 1l-.3 2h-5L9 18a8 8 0 0 1-2-1l-2 1-2-4 2-1a8 8 0 0 1 0-2L3 9l2-4 2 1a8 8 0 0 1 2-1l.7-2h5l.3 2a8 8 0 0 1 2 1l2-1 2 4-2 2a8 8 0 0 1 0 2Z"/>',
+  '9997':'<path d="m4 16-1 5 5-1L20 8l-4-4Z"/><path d="m14 6 4 4"/>',
+  '128250':'<rect x="3" y="5" width="18" height="13" rx="2"/><path d="m8 22 4-4 4 4M8 9h8"/>',
+  '128424':'<path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v7H6z"/>',
+  '128339':'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  '128205':'<path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/>',
+  '129359':'<path d="M3 10h18v7H3zM6 10V7h12v3M7 17v3m10-3v3"/><path d="M5 13h2m10 0h2"/>',
+  '128202':'<path d="M4 20V11h4v9M10 20V4h4v16M16 20v-7h4v7"/>',
+  '128226':'<path d="M3 10v4h4l10 5V5L7 10Z"/><path d="M7 14 9 21h4l-2-5m8-5h2m-2-4 2-2m-2 12 2 2"/>',
+  '128274':'<rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 1 1 8 0v3m-4 4v3"/>',
+  '128228':'<path d="M12 16V3m-5 5 5-5 5 5M4 14v6h16v-6"/>'
+};
+function normalizeUiIcons(html){
+  return String(html).replace(/&#(\d+);/g,(entity,n)=>{
+    if(n==='65039') return '';
+    const path=UI_ICON_SVG[n];
+    return path ? `<span class="ui-icon" aria-hidden="true"><svg viewBox="0 0 24 24">${path}</svg></span>` : entity;
+  });
+}
+
+const K = id => D.klub.find(k => k.id === id) || {nama:'?', warna:'#555'};
+const inisial = n => String(n).split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
+function tglID(s, pendek) {
+  const p = String(s).slice(0,10).split('-');
+  return new Date(+p[0], +p[1]-1, +p[2]).toLocaleDateString('id-ID', pendek ? {day:'numeric',month:'short',year:'numeric'} : {weekday:'long',day:'numeric',month:'long',year:'numeric'});
+}
+
+function logo(k, sm) {
+  const c = sm ? 'logo sm' : 'logo';
+  if (k.logo) return `<img class="${c}" src="${esc(k.logo)}" alt="">`;
+  return `<span class="${c}" style="background:${esc(k.warna)}">${esc(inisial(k.nama))}</span>`;
+}
+const tim = (id, right) => { const k = K(id); return `<div class="tim ${right?'r':''}">${right ? esc(k.nama)+logo(k,1) : logo(k,1)+esc(k.nama)}</div>`; };
+
+function selesaiIntro() {
+  const b = document.getElementById('bootScreen');
+  if (b && !b.classList.contains('done')) b.classList.add('done');
+}
+function load(d) { try { D = d; window.D = d; render(); selesaiIntro(); } catch (e) { selesaiIntro(); document.getElementById('app').textContent = 'Error tampil: ' + e.message; } }
+function toast(t) {
+  const e = document.getElementById('toast');
+  e.textContent = t; e.style.display = 'block';
+  clearTimeout(window._t);
+  window._t = setTimeout(() => (e.style.display = 'none'), 6000);
+}
+function gagal(e) { toast('Peringatan: ' + (e && e.message ? e.message : e)); }
+function pindah(t) { setTimeout(() => { tab = t; klubAktif = null; render(); }, 140); }
+
+const LINKS = [['Daftar','&#9997;&#65039;','Daftar Klub'],['Tv','&#128250;','Layar TV'],['Cetak','&#128424;&#65039;','Cetak Jadwal']];
+const NAV_ICONS = {
+  beranda:'<svg viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1Z"/></svg>',
+  klub:'<svg viewBox="0 0 24 24"><path d="M12 2 20 5v6c0 5-3.4 8.5-8 11-4.6-2.5-8-6-8-11V5Z"/><path d="m8.5 12 2.2 2.2 4.8-5"/></svg>',
+  pemain:'<svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 21a6.5 6.5 0 0 1 13 0M16 5.5a3 3 0 0 1 0 5.8M18 15a5 5 0 0 1 3.5 5"/></svg>',
+  jadwal:'<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4m10-4v4M3 10h18M8 14h3m-3 3h3m3-3h3"/></svg>',
+  hasil:'<svg viewBox="0 0 24 24"><path d="M4 5h16v14H4zM8 9h8M8 13h2m4 0h2M8 16h8"/><path d="m2 3 2 2m18-2-2 2"/></svg>',
+  klasemen:'<svg viewBox="0 0 24 24"><path d="M4 20V11h4v9M10 20V4h4v16M16 20v-7h4v7"/></svg>',
+  bagan:'<svg viewBox="0 0 24 24"><rect x="2.5" y="3" width="7" height="5" rx="1"/><rect x="14.5" y="16" width="7" height="5" rx="1"/><rect x="14.5" y="3" width="7" height="5" rx="1"/><path d="M9.5 5.5h2.5v13h2.5"/></svg>',
+  topskor:'<svg viewBox="0 0 24 24"><path d="m12 2 2.7 5.5 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1-4.4-4.3 6.1-.9Z"/></svg>',
+  admin:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="m19 13.5 1.4 1.1-1.8 3.1-1.7-.6a7 7 0 0 1-1.7 1l-.3 1.8h-3.6l-.3-1.8a7 7 0 0 1-1.7-1l-1.7.6-1.8-3.1L5.2 13a7 7 0 0 1 0-2L3.8 9.9l1.8-3.1 1.7.6a7 7 0 0 1 1.7-1l.3-1.8h3.6l.3 1.8a7 7 0 0 1 1.7 1l1.7-.6 1.8 3.1L19 11.5a7 7 0 0 1 0 2Z"/></svg>'
+};
+const LINK_ICONS = {
+  Daftar:'<svg viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"/></svg>',
+  Tv:'<svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="14" rx="2"/><path d="m8 22 4-4 4 4M8 9h8"/></svg>',
+  Cetak:'<svg viewBox="0 0 24 24"><path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v7H6z"/></svg>'
+};
+function gambarNav() {
+  document.getElementById('nav').innerHTML = TABS.map(([k,i,l]) =>
+    `<button class="${tab===k?'on':''}" onclick="pindah('${k}')"><span class="nav-ico">${NAV_ICONS[k]||''}</span><span class="lb">${l}</span></button>`).join('')
+    + (APPURL && !ADMIN_PAGE ? '<div class="sep"></div>' + LINKS.map(([p,i,l]) => `<a class="lnk" href="${esc(APPURL)}?page=${p}" target="_top"><span class="nav-ico">${LINK_ICONS[p]||''}</span><span class="lb">${l}</span></a>`).join('') : '');
+}
+
+const HEAD_ICONS = {
+  menu:'<svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg>',
+  close:'<svg viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></svg>',
+  bell:'<svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg>',
+  settings:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="m19.4 15 .1.1 1.4 1.1-1.4 2.4-1.7-.6a8 8 0 0 1-1.8 1l-.3 1.8h-2.8l-.3-1.8a8 8 0 0 1-1.8-1l-1.7.6-1.4-2.4L7.1 15a8 8 0 0 1 0-2l-1.4-1.1 1.4-2.4 1.7.6a8 8 0 0 1 1.8-1l.3-1.8h2.8l.3 1.8a8 8 0 0 1 1.8 1l1.7-.6 1.4 2.4-1.4 1.1a8 8 0 0 1-.1 2Z" transform="translate(-1 -1) scale(1.08)"/></svg>',
+  moon:'<svg viewBox="0 0 24 24"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5 8.7 8.7 0 1 0 20.5 14.2Z"/></svg>',
+  sun:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg>',
+  user:'<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>'
+};
+function updateHeader(){
+  const roleName = ROLE === 'admin' ? 'Admin' : ROLE === 'petugas' ? 'Petugas' : ROLE === 'klub' ? (K(RK).nama || 'Perwakilan Klub') : 'Pengunjung';
+  const t=document.getElementById('profileName'),a=document.getElementById('profileAvatar');
+  if(t)t.textContent=roleName;
+  if(a)a.innerHTML=ROLE==='admin'?'A':ROLE==='petugas'?'P':ROLE==='klub'?esc(inisial(roleName)):'<span class="svg-icon">'+HEAD_ICONS.user+'</span>';
+  const g=(id,key)=>{const e=document.getElementById(id);if(e)e.innerHTML=HEAD_ICONS[key]||''};
+  g('menuGlyph',window.matchMedia('(max-width:720px)').matches?(document.querySelector('aside').classList.contains('mobile-nav-expanded')?'close':'menu'):(document.querySelector('.app').classList.contains('sidebar-collapsed')?'menu':'close'));g('bellGlyph','bell');g('settingsGlyph','settings');g('themeGlyph',document.body.classList.contains('light-mode')?'sun':'moon');
+  const n=notificationItems().length, badge=document.getElementById('notifCount');if(badge){badge.textContent=n>9?'9+':n;badge.hidden=!n;}
+  const np=document.getElementById('notifPanel');if(np&&!np.hidden)renderNotifPanel();
+  const sp=document.getElementById('settingsPanel');if(sp&&!sp.hidden)renderSettingsPanel();
+  const pp=document.getElementById('profilePanel');if(pp&&!pp.hidden)renderProfilePanel();
+}
+function toggleSidebar(){
+  const app=document.querySelector('.app');
+  if(window.matchMedia('(max-width:720px)').matches){app.classList.toggle('mobile-nav-expanded');const aside=document.querySelector('aside');if(aside)aside.classList.toggle('mobile-nav-expanded');toast(aside.classList.contains('mobile-nav-expanded')?'Menu navigasi diperluas':'Menu navigasi diringkas');}
+  else{app.classList.toggle('sidebar-collapsed');}
+  const expanded=app.classList.contains('mobile-nav-expanded') || !app.classList.contains('sidebar-collapsed');
+  const btn=document.getElementById('menuToggle');if(btn)btn.setAttribute('aria-expanded',String(expanded));
+  const glyph=document.getElementById('menuGlyph');if(glyph)glyph.innerHTML=HEAD_ICONS[expanded?'close':'menu'];
+}
+function closeHeadPanels(except){['notifPanel','settingsPanel','profilePanel'].forEach(id=>{const e=document.getElementById(id);if(e&&id!==except)e.hidden=true;});}
+function toggleHeadPanel(id){const e=document.getElementById(id);if(!e)return;const opening=e.hidden;closeHeadPanels(id);e.hidden=!opening;if(opening){if(id==='notifPanel')renderNotifPanel();if(id==='settingsPanel')renderSettingsPanel();if(id==='profilePanel')renderProfilePanel();}}
+function notificationItems(){
+  if(!D||!Array.isArray(D.match))return [];
+  const ms=D.match.slice().sort((a,b)=>String(a.tanggal).localeCompare(String(b.tanggal)));
+  const upcoming=ms.filter(m=>m.status!=='Selesai').slice(0,3).map(m=>({title:'Pertandingan mendatang',desc:K(m.home).nama+' vs '+K(m.away).nama,date:String(m.tanggal).slice(0,16).replace('T',' '),tab:'jadwal'}));
+  const latest=ms.filter(m=>m.status==='Selesai').reverse().slice(0,2).map(m=>({title:'Hasil pertandingan tersedia',desc:K(m.home).nama+' '+m.skorHome+' - '+m.skorAway+' '+K(m.away).nama,date:String(m.tanggal).slice(0,10),tab:'hasil'}));
+  return upcoming.concat(latest).slice(0,5);
+}
+function renderNotifPanel(){const e=document.getElementById('notifPanel');if(!e)return;const items=notificationItems();e.innerHTML='<h3>Notifikasi Liga</h3>'+(items.length?items.map(x=>`<div class="head-item"><span class="item-dot"></span><div><b>${esc(x.title)}</b><div>${esc(x.desc)}</div><small>${esc(x.date)}</small>${ADMIN_PAGE?'':`<button class="panel-action" onclick="closeHeadPanels();pindah('${x.tab}')">Lihat informasi</button>`}</div></div>`).join(''):'<div class="panel-empty">Belum ada notifikasi pertandingan.</div>');}
+function renderSettingsPanel(){const e=document.getElementById('settingsPanel');if(!e)return;e.innerHTML='<h3>Pengaturan tampilan</h3><label class="setting-row"><span>Animasi antarmuka</span><input type="checkbox" '+(document.body.classList.contains('motion-off')?'':'checked')+' onchange="toggleMotion(this.checked)"></label><label class="setting-row"><span>Mode tampilan</span><select aria-label="Mode tampilan" onchange="setTheme(this.value)"><option value="dark" '+(!document.body.classList.contains('light-mode')?'selected':'')+'>Gelap</option><option value="light" '+(document.body.classList.contains('light-mode')?'selected':'')+'>Terang</option></select></label><button class="panel-action" onclick="toast(\'Pengaturan tampilan diterapkan.\')">Selesai</button>';}
+function renderProfilePanel(){const e=document.getElementById('profilePanel');if(!e)return;const name=ROLE==='admin'?'Admin':ROLE==='petugas'?'Petugas Pertandingan':ROLE==='klub'?K(RK).nama:'Pengunjung';e.innerHTML='<div class="profile-meta"><strong>'+esc(name)+'</strong>'+ (ROLE==='admin'?'Administrator Liga':ROLE==='petugas'?'Mengelola pertandingan':ROLE==='klub'?'Perwakilan klub':'Belum masuk ke akun pengelola')+'</div>'+(ROLE?'<button class="panel-action" onclick="closeHeadPanels();pindah(\'admin\')">Buka panel pengelola</button><button class="panel-action" onclick="closeHeadPanels();keluar()">Keluar akun</button>':(ADMIN_PAGE?'<button class="panel-action" onclick="closeHeadPanels();pindah(\'admin\')">Masuk ke Dashboard Admin</button>':''));}
+function setTheme(mode){document.body.classList.toggle('light-mode',mode==='light');try{localStorage.setItem('ld_theme',mode);}catch(e){}updateHeader();}
+function toggleTheme(){setTheme(document.body.classList.contains('light-mode')?'dark':'light');toast(document.body.classList.contains('light-mode')?'Mode terang aktif':'Mode gelap aktif');}
+function toggleMotion(on){document.body.classList.toggle('motion-off',!on);try{localStorage.setItem('ld_motion',on?'on':'off');}catch(e){}toast(on?'Animasi diaktifkan':'Animasi dinonaktifkan');}
+document.addEventListener('click',function(ev){if(!ev.target.closest('.head-action-wrap')&&!ev.target.closest('.profile-wrap'))closeHeadPanels();});
+document.addEventListener('keydown',function(ev){if(ev.key==='Escape')closeHeadPanels();});
+try{if(localStorage.getItem('ld_theme')==='light')document.body.classList.add('light-mode');if(localStorage.getItem('ld_motion')==='off')document.body.classList.add('motion-off');}catch(e){}
+
+function render() {
+  gambarNav();
+  document.getElementById('tgl').innerHTML = '&#128197; ' + new Date().toLocaleDateString('id-ID', {weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  document.getElementById('thn').textContent = new Date().getFullYear();
+  updateHeader();
+  const f = { beranda, klub: klubTab, pemain: pemainTab, jadwal: () => jadwal(), hasil, klasemen, bagan, topskor, admin: kelola }[tab];
+  const ap = document.getElementById('app'), kunci = tab + '|' + klubAktif;
+  ap.innerHTML = normalizeUiIcons(f());
+  if (kunci !== window._kp) { ap.classList.remove('pg'); void ap.offsetWidth; ap.classList.add('pg'); window.scrollTo(0, 0); }
+  window._kp = kunci;
+}
+
+// ---------- Dashboard ----------
+function urut(a) { return a.slice().sort((x, y) => String(x.tanggal).localeCompare(String(y.tanggal))); }
+function beranda() {
+  const selesai = urut(D.match.filter(m => m.status === 'Selesai')).reverse();
+  const nx = urut(D.match.filter(m => m.status !== 'Selesai'))[0];
+  const semua = [].concat(...Object.values(D.klasemen)).sort((a, b) => b.pts - a.pts || b.sg - a.sg || b.gm - a.gm).slice(0, 5);
+  const ts = (D.topSkor || []).slice(0, 3);
+  const stat = (ic, n, l) => `<div class="card stat"><span class="ic">${ic}</span><div><b>${n}</b><span class="mut">${l}</span></div></div>`;
+  const next = nx ? (() => { const h = K(nx.home), a = K(nx.away); return `<div class="next">
+      <div>${logo(h)}<div><b>${esc(h.nama)}</b></div></div>
+      <div><div class="vs">VS</div><div class="jam">&#128339; ${esc(String(nx.tanggal).slice(11,16) || '15:00')} WIB</div><div class="mut">${tglID(nx.tanggal)}</div><div class="mut">&#128205; ${esc(h.stadion || 'Lapangan')}</div></div>
+      <div>${logo(a)}<div><b>${esc(a.nama)}</b></div></div></div>`; })() : `<div class="next mut" style="display:block">Belum ada pertandingan terjadwal.</div>`;
+  return `<div class="hero"><small>Selamat Datang di</small><h1>Liga Desa <span>Tenjoayu</span></h1><i>Satu Lapangan, Satu Semangat, Menuju Juara!</i><div class="ball">&#9917;</div></div>
+  <div class="stats">${stat('&#127942;', D.klub.length, 'Klub Peserta')}${stat('&#128101;', D.pemain.length, 'Pemain')}${stat('&#128197;', D.match.length, 'Pertandingan')}${stat('&#129359;', 1, 'Lapangan')}</div>
+  <div class="two">
+    <div class="card flat"><div class="ch"><span>&#127942; Pertandingan Berikutnya</span><button class="link" onclick="pindah('jadwal')">Lihat Jadwal</button></div>${next}</div>
+    <div class="card flat"><div class="ch"><span>&#128202; Klasemen Sementara</span><button class="link" onclick="pindah('klasemen')">Lihat Lengkap</button></div>
+      <table><tr><th>Pos</th><th>Klub</th><th>Main</th><th>SG</th><th>Poin</th></tr>${semua.map((r, i) => `<tr class="${i === 0 ? 'first' : ''}"><td>${i+1}</td><td><div class="tim">${logo(K(r.id),1)}${esc(r.nama)}</div></td><td>${r.m}</td><td>${r.sg > 0 ? '+' : ''}${r.sg}</td><td class="pts">${r.pts}</td></tr>`).join('')}</table></div>
+  </div>
+  <div class="two">
+    <div class="card flat"><div class="ch"><span>&#9917; Top Score</span><button class="link" onclick="pindah('topskor')">Lihat Lengkap</button></div>
+      ${ts.length ? ts.map((p, i) => `<div class="ts"><b>${i+1}</b><div>${ava(p)} <b>${esc(p.nama)}</b> <span class="mut">(${esc(K(p.klubId).nama)})</span></div><b>${p.gol} Gol</b></div>`).join('') : '<div class="info mut">Belum ada gol tercatat.</div>'}</div>
+    <div class="card flat"><div class="ch"><span>&#128226; Informasi Terbaru</span><button class="link" onclick="pindah('hasil')">Lihat Semua</button></div>
+      ${selesai.slice(0, 3).map(m => `<div class="info"><span class="dot"></span>${esc(K(m.home).nama)} ${m.skorHome} - ${m.skorAway} ${esc(K(m.away).nama)}<em>${tglID(m.tanggal, 1)}</em></div>`).join('') || '<div class="info mut">Belum ada hasil pertandingan.</div>'}</div>
+  </div>`;
+}
+
+// ---------- Klub & pemain ----------
+function klubTab() {
+  if (klubAktif) return detailKlub(K(klubAktif));
+  return `<div class="grid">` + D.klub.map(k => `
+    <div class="card klub" onclick="klubAktif='${k.id}';render()">
+      ${logo(k)}<h3 style="margin:10px 0 2px">${esc(k.nama)}</h3>
+      <div class="mut">${esc(k.kota)}${D.mode === 'liga' ? '' : ' &middot; Grup ' + esc(k.grup)}</div>
+    </div>`).join('') + `</div>`;
+}
+
+const GRUP_POS = [['GK','Kiper'],['DF','Bek'],['MF','Gelandang'],['FW','Penyerang']];
+function foto(p, k) {
+  if (p.foto) return `<img class="pfoto" src="${esc(p.foto)}" alt="">`;
+  return `<div class="pfoto" style="background:${esc(k.warna || '#475569')}">${esc(p.nomor)}</div>`;
+}
+function ava(p) { return p.foto ? `<img class="ava" src="${esc(p.foto)}" alt="">` : ''; }
+const kartuP = (x, k) => `<div class="card pcard">${foto(x, k)}<div class="pinfo"><span class="pno">${esc(x.nomor)}</span><b>${esc(x.nama)}</b>
+  <div class="mut">${esc(x.posisi)}${x.gol > 0 ? ' &middot; &#9917; ' + x.gol : ''}</div></div></div>`;
+
+function pemainTab() {
+  return D.klub.map(k => {
+    const p = D.pemain.filter(x => x.klubId === k.id).sort((a, b) => a.nomor - b.nomor);
+    return `<h2>${esc(k.nama)}</h2><div class="pgrid">${p.map(x => kartuP(x, k)).join('')}</div>`;
+  }).join('');
+}
+
+function detailKlub(k) {
+  const p = D.pemain.filter(x => x.klubId === k.id).sort((a, b) => a.nomor - b.nomor);
+  return `<button class="btn sm" onclick="klubAktif=null;render()">&larr; Semua klub</button>
+  <div class="card" style="margin-top:12px;display:flex;gap:20px;align-items:center;flex-wrap:wrap">
+    ${logo(k)}
+    <div><h2 style="margin:0">${esc(k.nama)}</h2>
+      <div class="mut">Kota: ${esc(k.kota)} &middot; Berdiri: ${esc(k.berdiri)} &middot; Stadion: ${esc(k.stadion)}${D.mode === 'liga' ? '' : ' &middot; Grup ' + esc(k.grup)}</div></div>
+  </div>` + GRUP_POS.map(([c, nama]) => {
+    const g = p.filter(x => x.posisi === c);
+    return g.length ? `<h2>${nama}</h2><div class="pgrid">${g.map(x => kartuP(x, k)).join('')}</div>` : '';
+  }).join('') + jadwalKlub(k);
+}
+
+function jadwalKlub(k) {
+  const ms = urut(D.match.filter(m => m.home === k.id || m.away === k.id));
+  if (!ms.length) return `<h2>Jadwal &amp; hasil</h2><p class="mut">Belum ada jadwal.</p>`;
+  return `<h2>Jadwal &amp; hasil</h2><div class="card">` + ms.map(m =>
+    `<div class="mut" style="padding-top:8px">${esc(m.fase)}${m.fase !== 'Semifinal' && m.fase !== 'Final' ? ' &middot; Ronde ' + m.ronde : ''}</div>` + barisMatch(m)
+  ).join('') + `</div>`;
+}
+
+// ---------- Klasemen ----------
+function klasemen() {
+  const liga = D.mode === 'liga';
+  return Object.keys(D.klasemen).sort().map(g => `
+    <h2>${liga ? 'Klasemen Liga' : 'Grup ' + esc(g)}</h2>
+    <div class="card"><table>
+      <tr><th>#</th><th>Klub</th><th>M</th><th>Mn</th><th>S</th><th>K</th><th>GM</th><th>GK</th><th>SG</th><th>Poin</th></tr>
+      ${D.klasemen[g].map((r,i) => `<tr class="${i<2 && !liga ? 'top2' : ''}"><td>${i+1}</td><td><div class="tim">${logo(K(r.id),1)}${esc(r.nama)}</div></td>
+        <td>${r.m}</td><td>${r.mn}</td><td>${r.s}</td><td>${r.k}</td><td>${r.gm}</td><td>${r.gk}</td><td>${r.sg}</td><td class="pts">${r.pts}</td></tr>`).join('')}
+    </table></div>`).join('') + (liga ? '' : `<p class="mut">Garis hijau = lolos semifinal (2 teratas tiap grup).</p>`);
+}
+
+// ---------- Jadwal & hasil ----------
+function barisMatch(m, edit) {
+  const selesai = m.status === 'Selesai';
+  const tengah = edit
+    ? `<input type="number" min="0" id="h_${m.id}" value="${selesai?m.skorHome:''}"> - <input type="number" min="0" id="a_${m.id}" value="${selesai?m.skorAway:''}">
+       <button class="btn sm" onclick="simpan('${m.id}')">Simpan</button>`
+    : (selesai ? `${m.skorHome} - ${m.skorAway}` : 'vs');
+  const atur = edit && (m.fase === 'Semifinal' || m.fase === 'Final')
+    ? `<div class="mut" style="padding:4px 0 8px">Atur tanggal: <input type="date" id="t_${m.id}" value="${esc(String(m.tanggal).slice(0, 10))}"> <input type="time" id="j_${m.id}" value="${esc(String(m.tanggal).slice(11, 16) || '15:00')}"> <button class="btn sm" onclick="simpanTgl('${m.id}')">Simpan tanggal</button></div>` : '';
+  return `<div class="mut" style="padding-top:8px">&#128197; ${esc(m.tanggal)}</div><div class="match" style="padding-top:2px">${tim(m.home,true)}<div class="skor">${tengah}</div>${tim(m.away)}</div>` + atur;
+}
+
+function jadwal(edit) {
+  if (!D.match.length) return `<p class="mut">Belum ada jadwal. Buka tab Kelola lalu klik "Buat jadwal otomatis".</p>`;
+  const tmb = `<button class="btn sm" style="margin-top:12px" onclick="urutTgl=!urutTgl;render()">${urutTgl ? 'Tampilan per ronde' : 'Urut per tanggal'}</button>`;
+  if (urutTgl) return tmb + `<h2>Semua pertandingan (urut tanggal)</h2><div class="card">` + urut(D.match).map(m =>
+    `<div class="mut" style="padding-top:8px">${esc(m.fase)}${m.grup ? ' &middot; Grup ' + esc(m.grup) : ''}${m.fase === 'Grup' || m.fase === 'Liga' ? ' &middot; Ronde ' + m.ronde : ''}</div>` + barisMatch(m, edit)).join('') + `</div>`;
+  let out = tmb;
+  ['Grup','Liga','Semifinal','Final'].forEach(fase => {
+    const ms = D.match.filter(m => m.fase === fase);
+    if (!ms.length) return;
+    if (fase === 'Grup' || fase === 'Liga') {
+      [...new Set(ms.map(m => m.grup))].sort().forEach(g => {
+        const mg = ms.filter(m => m.grup === g);
+        [...new Set(mg.map(m => m.ronde))].forEach(r => {
+          out += `<h2>${fase === 'Grup' ? 'Grup ' + esc(g) + ' &middot; ' : ''}Ronde ${r}</h2><div class="card">${mg.filter(m => m.ronde === r).map(m => barisMatch(m, edit)).join('')}</div>`;
+        });
+      });
+    } else {
+      out += `<h2>${fase}</h2><div class="card">${ms.map(m => barisMatch(m, edit)).join('')}</div>`;
+    }
+  });
+  return out;
+}
+
+function hasil() {
+  const ms = urut(D.match.filter(m => m.status === 'Selesai')).reverse();
+  if (!ms.length) return `<p class="mut">Belum ada pertandingan yang selesai.</p>`;
+  return `<h2>Hasil Pertandingan</h2><div class="card">${ms.map(m => barisMatch(m)).join('')}</div>`;
+}
+
+// ---------- Bagan ----------
+function bagan() {
+  const sf = D.match.filter(m => m.fase === 'Semifinal');
+  const fn = D.match.find(m => m.fase === 'Final');
+  if (!sf.length) return `<p class="mut">Bagan muncul otomatis setelah semua pertandingan grup selesai.</p>`;
+  const kartu = m => {
+    const s = m.status === 'Selesai';
+    const mh = s && +m.skorHome > +m.skorAway, ma = s && +m.skorAway > +m.skorHome;
+    return `<div class="card">
+      <div class="row ${mh?'menang':''}">${tim(m.home)}<span>${s?m.skorHome:'-'}</span></div>
+      <div class="row ${ma?'menang':''}">${tim(m.away)}<span>${s?m.skorAway:'-'}</span></div></div>`;
+  };
+  const juara = fn && fn.status === 'Selesai' ? K(+fn.skorHome > +fn.skorAway ? fn.home : fn.away) : null;
+  return `<div class="bagan">
+    <div><div class="mut" style="margin-bottom:8px">SEMIFINAL</div>${sf.map(kartu).join('')}</div>
+    <div><div class="mut" style="margin-bottom:8px">FINAL</div>${fn ? kartu(fn) : '<div class="card mut">Menunggu pemenang semifinal</div>'}
+    ${juara ? `<div class="card" style="text-align:center">&#127942; Juara<br><br>${logo(juara)}<h3>${esc(juara.nama)}</h3></div>` : ''}</div>
+  </div>`;
+}
+
+// ---------- Top skor ----------
+function topskor() {
+  const t = D.topSkor || [];
+  if (!t.length) return `<p class="mut">Belum ada gol tercatat. Input gol lewat tab Kelola.</p>`;
+  return `<div class="card"><table><tr><th>#</th><th>Pemain</th><th>Klub</th><th>Gol</th></tr>` +
+    t.map((p,i) => `<tr><td>${i+1}</td><td>${ava(p)}${esc(p.nama)}</td><td><div class="tim" style="justify-content:center">${logo(K(p.klubId),1)}${esc(K(p.klubId).nama)}</div></td><td class="pts">${p.gol}</td></tr>`).join('') +
+    `</table></div>`;
+}
+
+// ---------- Panggilan ke server ----------
+const ok = d => { edK = null; edP = null; load(d); toast('Tersimpan'); };
+let _sib = 0;
+function bar(on) {
+  const b = document.getElementById('bar');
+  if (on) { if (!_sib++) { b.className = ''; void b.offsetWidth; b.className = 'on'; } }
+  else if (--_sib <= 0) { _sib = 0; b.className = 'fin'; setTimeout(() => { if (!_sib) b.className = ''; }, 300); }
+}
+function panggil(fn, args, sukses) {
+  const tombol = document.activeElement && document.activeElement.tagName === 'BUTTON' ? document.activeElement : null;
+  if (tombol) { tombol.classList.add('is-loading'); tombol.setAttribute('aria-busy', 'true'); tombol.disabled = true; }
+  const pulihkanTombol = () => { if (tombol) { tombol.classList.remove('is-loading'); tombol.removeAttribute('aria-busy'); tombol.disabled = false; } };
+  bar(1);
+  const t = setTimeout(() => toast('Peringatan: Server tidak merespons. Coba jendela Incognito (satu akun Google) atau izinkan cookie pihak ketiga.'), 15000);
+  google.script.run
+    .withSuccessHandler(r => { clearTimeout(t); bar(0); pulihkanTombol(); sukses(r); })
+    .withFailureHandler(e => { clearTimeout(t); bar(0); pulihkanTombol(); gagal(e); })[fn](...args);
+}
+const v = id => document.getElementById(id).value;
+function hapusBtn(fn, id) { return `<button class="btn sm" onclick="${fn}('${id}')">${konfirm === id ? 'Yakin?' : 'Hapus'}</button>`; }
+
+// ---------- Admin / Kelola ----------
+function kelola() {
+  let h = `<div class="card login-panel">
+    <div class="login-heading"><span class="login-icon">&#128274;</span><div><b>Akses Pengelola</b><div class="mut">Login admin atau perwakilan klub</div></div></div>
+    <input type="password" placeholder="Password admin / kode klub" value="${esc(PW)}" oninput="PW=this.value">
+    <button class="btn" onclick="masuk()">Masuk</button>
+    ${ROLE ? `<button class="btn sm" onclick="keluar()">Keluar</button> <span class="mut">Login: ${ROLE === 'admin' ? 'Admin' : esc(K(RK).nama)}</span>` : ''}
+    <span id="msg"></span>
+    <p class="mut" style="margin-bottom:0">Admin: kelola semua. Perwakilan klub: masuk dengan kode klub untuk mengedit identitas &amp; pemain klubnya sendiri.</p></div>`;
+  if (!ROLE) return h;
+  if (ROLE === 'admin') h += kartuDaftar() + adminSkor();
+  return h + bagianKlub();
+}
+
+function peringatanBentrok() {
+  const b = D.bentrok || [];
+  if (!b.length) return '';
+  return '<div class="card" style="border-color:#e35d6a;margin-bottom:10px"><b>Bentrok jadwal:</b> ' + b.length
+    + ' tanggal punya lebih dari satu pertandingan (' + b.slice(0, 5).map(x => esc(x.tanggal)).join(', ') + (b.length > 5 ? ', ...' : '')
+    + '). Lapangan hanya satu: maksimal satu pertandingan per hari. Jadwal lama tidak diubah otomatis; '
+    + 'klik "Buat jadwal otomatis" jika panitia setuju (skor akan direset).</div>';
+}
+
+function adminSkor() {
+  const mp = modePilih || D.mode;
+  return `<h2>Jadwal &amp; skor</h2><div class="card">${peringatanBentrok()}
+    <div style="margin-bottom:10px"><b>Mode kompetisi:</b>
+      <select onchange="modePilih=this.value;konfirm=null;render()">
+        <option value="grup" ${mp === 'grup' ? 'selected' : ''}>Group stage (grup + semifinal + final)</option>
+        <option value="liga" ${mp === 'liga' ? 'selected' : ''}>Liga (1 klasemen, kandang-tandang)</option>
+      </select>
+      ${mp !== D.mode ? `<button class="btn sm" onclick="terapkanMode()">${konfirm === 'mode' ? 'Yakin? Jadwal & skor direset' : 'Terapkan mode'}</button>` : '<span class="mut">(aktif)</span>'}
+    </div>
+    <input type="date" value="${esc(MULAI)}" oninput="MULAI=this.value" title="Tanggal mulai (kosong = Sabtu depan)">
+    <button class="btn" onclick="buatJadwal()">Buat jadwal otomatis (reset skor)</button>
+    <button class="btn sm" onclick="rapikan()">Rapikan tanggal (skor tetap)</button>
+    <button class="btn sm" onclick="rapikanDb()">Rapikan tampilan database</button>
+    <button class="btn sm" onclick="kosongkan()">Kosongkan jadwal</button>
+    ${mp === 'grup' ? `<div style="margin-top:12px"><b>Tanggal mulai fase gugur:</b> <span class="mut">(kosong = otomatis)</span>${['Semifinal','Final'].map(f => `<div style="margin-top:6px">${f}: <input type="date" id="mf_${f}" value="${esc((D.mulaiGugur || {})[f] || '')}"> <button class="btn sm" onclick="simpanMulai('${f}')">Simpan</button> <button class="btn sm" onclick="otoMulai('${f}')">Otomatis</button></div>`).join('')}</div>` : ''}
+    <p class="mut" style="margin-bottom:0">Tambah/hapus klub &rarr; buat jadwal ulang. Satu lapangan: maksimal 1 pertandingan per hari. Mode group stage: semifinal &amp; final otomatis, fase gugur tidak boleh seri.</p></div>` + jadwal(true);
+}
+
+function bagianKlub() {
+  const admin = ROLE === 'admin';
+  if (!admin) gKlub = RK;
+  const daftar = admin ? D.klub : [K(RK)];
+  let h = `<h2>Klub</h2><div class="card">` + (admin ? `<button class="btn sm" onclick="edK={};render()">+ Tambah klub</button>` : '') +
+    `<table>${daftar.map(k => `<tr><td>${logo(k,1)}</td><td>${esc(k.nama)} <span class="mut">Grup ${esc(k.grup)}</span></td>
+      <td><button class="btn sm" onclick="editKlub('${k.id}')">Edit</button>${admin ? ' ' + hapusBtn('hapusKlub', k.id) : ''}</td></tr>`).join('')}</table></div>`;
+  if (edK) h += formKlub(admin);
+
+  const ps = D.pemain.filter(p => p.klubId === gKlub).sort((a, b) => a.nomor - b.nomor);
+  h += `<h2>Pemain</h2><div class="card">`;
+  if (admin) h += `<select onchange="gKlub=this.value;edP=null;render()">${D.klub.map(k => `<option value="${k.id}" ${k.id === gKlub ? 'selected' : ''}>${esc(k.nama)}</option>`).join('')}</select> `;
+  h += `<button class="btn sm" onclick="edP={klubId:gKlub};render()">+ Tambah pemain</button> <button class="btn sm" onclick="edMassal=!edMassal;render()">Tempel daftar</button>`;
+  if (edMassal) h += `<div style="margin:10px 0"><p class="mut" style="margin:0 0 6px">Satu pemain per baris: <b>nomor, nama, posisi</b> (GK, DF, MF, FW, atau kiper, bek, gelandang, penyerang).</p>
+    <textarea id="massal" rows="9" style="width:100%;padding:8px;background:var(--bg);color:var(--txt);border:1px solid var(--line);border-radius:8px;font:inherit" placeholder="1, Budi Santoso, GK&#10;2, Ahmad Fauzi, DF&#10;10, Rudi Hermawan, MF&#10;9, Joko Pratama, FW"></textarea>
+    <button class="btn" style="margin-top:8px" onclick="simpanMassal()">Simpan semua</button> <button class="btn sm" onclick="edMassal=false;render()">Batal</button></div>`;
+  h += `
+    <table><tr><th>No</th><th>Nama</th><th>Pos</th><th>Gol</th><th></th></tr>` +
+    ps.map(p => `<tr><td>${esc(p.nomor)}</td><td>${ava(p)}${esc(p.nama)}</td><td>${esc(p.posisi)}</td>
+      <td>${admin ? `<input type="number" min="0" id="g_${p.id}" value="${p.gol}"> <button class="btn sm" onclick="simpanGol('${p.id}')">Simpan</button>` : p.gol}</td>
+      <td><button class="btn sm" onclick="editPemain('${p.id}')">Edit</button> ${hapusBtn('hapusPemain', p.id)}</td></tr>`).join('') + `</table></div>`;
+  if (edP) h += formPemain();
+  return h;
+}
+
+function formKlub(admin) {
+  const k = edK;
+  const f = (id, label, val, type) => `<label class="mut">${label}<br><input id="fk_${id}" type="${type || 'text'}" value="${esc(val)}"></label>`;
+  return `<div class="card"><h3 style="margin-top:0">${k.id ? 'Edit' : 'Tambah'} klub</h3><div class="form">
+    ${f('nama','Nama klub',k.nama)} ${f('kota','Kota',k.kota)} ${f('berdiri','Tahun berdiri',k.berdiri,'number')}
+    ${f('stadion','Stadion',k.stadion)} <div><div class="mut">Logo (pilih gambar)</div>
+      <input type="file" accept=".png,.jpg,.jpeg,.webp,.gif" onchange="pilihLogo(this)">
+      <div style="margin-top:6px;display:flex;align-items:center;gap:10px"><span id="prevLogo">${logo({logo:k.logo, nama:k.nama||'?', warna:k.warna||'#2563eb'})}</span>
+      <button class="btn sm" onclick="hapusLogo()">Hapus logo</button></div></div>
+    ${f('warna','Warna',k.warna || '#2563eb','color')}
+    ${admin ? f('grup','Grup (A/B)',k.grup) + f('kode','Kode klub (kosong = tidak diubah)','') : ''}
+  </div><button class="btn" onclick="simpanKlub()">Simpan</button> <button class="btn sm" onclick="edK=null;render()">Batal</button></div>`;
+}
+
+function formPemain() {
+  const p = edP;
+  const pos = ['GK','DF','MF','FW'].map(x => '<option' + (x === p.posisi ? ' selected' : '') + '>' + x + '</option>').join('');
+  const fotoHtml = p.foto ? '<img class="ava" style="width:56px;height:56px" src="' + esc(p.foto) + '" alt="">' : '<span class="mut">Belum ada foto</span>';
+  return '<div class="card"><h3 style="margin-top:0">' + (p.id ? 'Edit' : 'Tambah') + ' pemain</h3><div class="form">'
+    + '<label class="mut">Nama<br><input id="fp_nama" value="' + esc(p.nama) + '"></label>'
+    + '<label class="mut">Nomor<br><input id="fp_nomor" type="number" min="1" value="' + esc(p.nomor) + '"></label>'
+    + '<label class="mut">Posisi<br><select id="fp_posisi">' + pos + '</select></label>'
+    + '<div><div class="mut">Foto pemain</div>'
+    + '<input type="file" accept=".png,.jpg,.jpeg,.webp,.gif" onchange="pilihFoto(this)">'
+    + '<div style="margin-top:6px;display:flex;align-items:center;gap:10px"><span id="prevFoto">' + fotoHtml + '</span>'
+    + '<button class="btn sm" onclick="hapusFoto()">Hapus foto</button></div></div>'
+    + '</div><button class="btn" onclick="simpanPemain()">Simpan</button> '
+    + '<button class="btn sm" onclick="edP=null;render()">Batal</button></div>';
+}
+
+function masuk() {
+  if (!PW.trim()) { toast('Masukkan password admin atau kode klub terlebih dahulu.'); return; }
+  toast('Memverifikasi akses...');
+  panggil('cekLogin', [PW], r => {
+    ROLE = r.role; RK = r.klubId || null;
+    if (ROLE === 'klub') gKlub = RK;
+    render();
+    toast(ROLE === 'admin' ? 'Selamat datang, Admin!' : 'Login perwakilan klub berhasil.');
+    if (ROLE === 'admin') muatDaftar();
+  });
+}
+function keluar() { ROLE = null; RK = null; PW = ''; edK = null; edP = null; render(); }
+function editKlub(id) { edK = Object.assign({}, K(id)); render(); }
+function editPemain(id) { edP = Object.assign({}, D.pemain.find(p => p.id === id)); render(); }
+
+function prevLogo() { document.getElementById('prevLogo').innerHTML = logo({ logo: edK.logo, nama: v('fk_nama') || '?', warna: v('fk_warna') }); }
+function pilihLogo(inp) {
+  const f = inp.files[0];
+  if (!f) return;
+  if (!f.type.startsWith('image/')) return gagal(new Error('File harus berupa gambar'));
+  const r = new FileReader();
+  r.onload = () => {
+    const img = new Image();
+    img.onload = () => {
+      const S = 160, c = document.createElement('canvas');
+      c.width = c.height = S;
+      const m = Math.min(img.width, img.height);
+      c.getContext('2d').drawImage(img, (img.width - m) / 2, (img.height - m) / 2, m, m, 0, 0, S, S);
+      let d = c.toDataURL('image/webp', 0.85);
+      if (d.indexOf('data:image/webp') !== 0) d = c.toDataURL('image/png');
+      if (d.length > 45000) d = c.toDataURL('image/jpeg', 0.7);
+      if (d.length > 45000) return gagal(new Error('Gambar terlalu besar'));
+      edK.logo = d;
+      prevLogo();
+    };
+    img.onerror = () => gagal(new Error('Gambar tidak bisa dibaca'));
+    img.src = r.result;
+  };
+  r.readAsDataURL(f);
+}
+
+function simpanKlub() {
+  const d = { id: edK.id || '', nama: v('fk_nama'), kota: v('fk_kota'), berdiri: v('fk_berdiri'), stadion: v('fk_stadion'), logo: edK.logo || '', warna: v('fk_warna') };
+  if (ROLE === 'admin') { d.grup = v('fk_grup'); d.kode = v('fk_kode'); }
+  panggil('simpanKlub', [d, PW], ok);
+}
+function prevFoto() {
+  document.getElementById('prevFoto').innerHTML = edP.foto ? `<img class="ava" style="width:56px;height:56px" src="${esc(edP.foto)}" alt="">` : '<span class="mut">Belum ada foto</span>';
+}
+function hapusLogo() { edK.logo = ''; prevLogo(); }
+function hapusFoto() { edP.foto = ''; prevFoto(); }
+function pilihFoto(inp) {
+  const f = inp.files[0];
+  if (!f) return;
+  if (!f.type.startsWith('image/')) return gagal(new Error('File harus berupa gambar'));
+  const r = new FileReader();
+  r.onload = () => {
+    const img = new Image();
+    img.onload = () => {
+      const W = 150, H = 200, c = document.createElement('canvas');
+      c.width = W; c.height = H;
+      let sw = img.width, sh = img.height;
+      if (sw / sh > W / H) sw = sh * W / H; else sh = sw * H / W;
+      c.getContext('2d').drawImage(img, (img.width - sw) / 2, (img.height - sh) * 0.15, sw, sh, 0, 0, W, H);
+      let d = c.toDataURL('image/webp', 0.8);
+      if (d.indexOf('data:image/webp') !== 0) d = c.toDataURL('image/jpeg', 0.75);
+      if (d.length > 45000) d = c.toDataURL('image/jpeg', 0.5);
+      if (d.length > 45000) return gagal(new Error('Foto terlalu besar'));
+      edP.foto = d;
+      prevFoto();
+    };
+    img.onerror = () => gagal(new Error('Gambar tidak bisa dibaca'));
+    img.src = r.result;
+  };
+  r.readAsDataURL(f);
+}
+function simpanPemain() {
+  panggil('simpanPemain', [{ id: edP.id || '', klubId: edP.klubId || gKlub, nama: v('fp_nama'), nomor: v('fp_nomor'), posisi: v('fp_posisi'), foto: edP.foto || '' }, PW], ok);
+}
+function hapusKlub(id) { if (konfirm !== id) { konfirm = id; return render(); } konfirm = null; panggil('hapusKlub', [id, PW], ok); }
+function hapusPemain(id) { if (konfirm !== id) { konfirm = id; return render(); } konfirm = null; panggil('hapusPemain', [id, PW], ok); }
+function simpanGol(id) { panggil('setGol', [id, v('g_' + id), PW], ok); }
+function simpanTgl(id) { panggil('aturTanggal', [id, v('t_' + id), v('j_' + id), PW], ok); }
+function simpanMulai(f) { panggil('setMulaiFase', [f, v('mf_' + f), PW], ok); }
+function otoMulai(f) { panggil('setMulaiFase', [f, '', PW], ok); }
+function muatDaftar() { panggil('daftarList', [PW], r => { DAFTAR = r; render(); }); }
+function kartuDaftar() {
+  if (!DAFTAR.length) return `<h2>Pendaftaran klub baru</h2><div class="card mut">Belum ada pendaftaran baru. Halaman pendaftaran: tambahkan ?page=Daftar di alamat web.</div>`;
+  return `<h2>Pendaftaran klub baru (${DAFTAR.length})</h2><div class="card"><table><tr><th>Klub</th><th>Kota</th><th>Perwakilan</th><th>WhatsApp</th><th>Grup</th><th></th></tr>` +
+    DAFTAR.map(x => `<tr><td>${esc(x.nama)}</td><td>${esc(x.kota)}</td><td>${esc(x.kontak)}</td><td>${esc(String(x.wa).replace(/^'/, ''))}</td>
+      <td><select id="dg_${x.id}"><option>A</option><option>B</option></select></td>
+      <td><button class="btn sm" onclick="terima('${x.id}')">Terima</button> <button class="btn sm" onclick="tolak('${x.id}')">${konfirm === x.id ? 'Yakin?' : 'Tolak'}</button></td></tr>`).join('') +
+    `</table><p class="mut" style="margin-bottom:0">Setelah klub diterima, buat jadwal ulang. Kode klub ditampilkan sekali saat diterima.</p></div>`;
+}
+function terima(id) { panggil('terimaDaftar', [id, v('dg_' + id), PW], r => { load(r.data); toast('Klub diterima. Kode klub: ' + r.kode); muatDaftar(); }); }
+function tolak(id) { if (konfirm !== id) { konfirm = id; return render(); } konfirm = null; panggil('tolakDaftar', [id, PW], () => { toast('Pendaftaran ditolak'); muatDaftar(); }); }
+function simpanMassal() {
+  panggil('simpanPemainMassal', [gKlub, v('massal'), PW], r => {
+    edMassal = false; load(r.data);
+    const l = r.lewati || [];
+    toast(r.tambah + ' pemain ditambah' + (l.length ? ', ' + l.length + ' dilewati: ' + l.slice(0, 3).join('; ') + (l.length > 3 ? '; ...' : '') : ''));
+  });
+}
+function rapikanDb() { toast('Merapikan database, mohon tunggu sekitar 20 detik...'); panggil('rapikanDatabase', [PW], () => toast('Database sudah dirapikan. Buka Google Sheet untuk melihat.')); }
+function rapikan() { panggil('rapikanJadwal', [PW], ok); }
+function kosongkan() { panggil('kosongkanJadwal', [PW], ok); }
+function terapkanMode() {
+  if (konfirm !== 'mode') { konfirm = 'mode'; return render(); }
+  konfirm = null;
+  const m = modePilih; modePilih = null;
+  panggil('setMode', [m, PW], ok);
+}
+function buatJadwal() { document.getElementById('msg').textContent = 'Memproses...'; panggil('generateJadwal', [MULAI, PW], ok); }
+function simpan(id) {
+  const h = document.getElementById('h_'+id).value, a = document.getElementById('a_'+id).value;
+  if (h === '' || a === '') return gagal(new Error('Isi kedua skor'));
+  panggil('simpanSkor', [id, h, a, PW], ok);
+}
+
+document.addEventListener('click', e => {
+  const b = e.target.closest('button');
+  if (!b) return;
+  const r = b.getBoundingClientRect(), d = Math.max(r.width, r.height), x = document.createElement('span');
+  x.className = 'rip';
+  x.style.cssText = `width:${d}px;height:${d}px;left:${e.clientX - r.left - d / 2}px;top:${e.clientY - r.top - d / 2}px`;
+  b.appendChild(x);
+  setTimeout(() => x.remove(), 600);
+});
+
+// ===== Pencetak gol per pertandingan & bagikan WhatsApp =====
+let edGol = null;
+const GM = () => (D && D.golMatch) || [];
+const adaP = id => D.pemain.find(p => p.id === id);
+
+// 1) baris pertandingan: tampilkan pencetak gol + tombol isi (admin)
+const _bm = barisMatch;
+barisMatch = function (m, edit) {
+  const h = _bm(m, edit);
+  const g = GM().filter(x => x.matchId === m.id && adaP(x.pemainId));
+  const nama = g.map(x => esc(adaP(x.pemainId).nama) + (x.jumlah > 1 ? ' &times;' + x.jumlah : '')).join(', ');
+  const btn = edit && m.status === 'Selesai' ? ` <button class="btn sm" onclick="bukaGol('${m.id}')">${g.length ? 'Ubah' : 'Isi'} pencetak gol</button>` : '';
+  return h + (nama || btn ? `<div class="mut" style="padding:2px 0 8px">${nama ? '&#9917; ' + nama : ''}${btn}</div>` : '');
+};
+
+// 2) form pencetak gol (muncul di atas "Jadwal & skor")
+function bukaGol(id) { edGol = id; render(); const f = document.getElementById('formGol'); if (f) f.scrollIntoView({ behavior: 'smooth' }); }
+function formGol() {
+  const m = D.match.find(x => x.id === edGol);
+  if (!m) return '';
+  const lama = {};
+  GM().filter(x => x.matchId === m.id).forEach(x => { lama[x.pemainId] = x.jumlah; });
+  const kol = (kid, skor) => `<div><b>${esc(K(kid).nama)}</b> <span class="mut">(skor ${skor})</span>` +
+    D.pemain.filter(p => p.klubId === kid).sort((a, b) => a.nomor - b.nomor).map(p =>
+      `<div style="display:flex;justify-content:space-between;align-items:center;padding:3px 0"><span>${esc(p.nomor)}. ${esc(p.nama)}</span><input type="number" min="0" class="gi" data-p="${p.id}" value="${lama[p.id] || 0}" style="width:60px;text-align:center"></div>`).join('') + '</div>';
+  return `<div class="card" id="formGol" style="margin-bottom:10px"><h3 style="margin-top:0">Pencetak gol: ${esc(K(m.home).nama)} ${m.skorHome} - ${m.skorAway} ${esc(K(m.away).nama)}</h3>
+    <div class="form" style="grid-template-columns:1fr 1fr">${kol(m.home, m.skorHome)}${kol(m.away, m.skorAway)}</div>
+    <button class="btn" onclick="kirimGol()">Simpan</button> <button class="btn sm" onclick="edGol=null;render()">Batal</button>
+    <p class="mut" style="margin-bottom:0">Isi jumlah gol tiap pemain. Total gol tiap klub tidak boleh melebihi skornya.</p></div>`;
+}
+function kirimGol() {
+  const d = [];
+  document.querySelectorAll('.gi').forEach(i => { const n = parseInt(i.value, 10) || 0; if (n > 0) d.push({ pemainId: i.dataset.p, jumlah: n }); });
+  panggil('simpanGolMatch', [edGol, d, PW], r => { edGol = null; ok(r); });
+}
+const _as = adminSkor;
+adminSkor = function () { return (edGol ? formGol() : '') + _as(); };
+
+// 3) bagikan ke WhatsApp
+function bagikan(t) { window.open('https://wa.me/?text=' + encodeURIComponent(t), '_blank'); }
+const tmbBagi = fn => `<button class="btn sm" style="margin-top:12px" onclick="bagikan(${fn}())">&#128228; Bagikan ke WhatsApp</button>`;
+const jamM = m => String(m.tanggal).slice(11, 16) || '15:00';
+const PENUTUP = '\n\n_Liga Desa Tenjoayu - Satu Lapangan, Satu Semangat, Menuju Juara!_';
+
+function teksJadwal() {
+  const ms = urut(D.match.filter(m => m.status !== 'Selesai')).slice(0, 7);
+  if (!ms.length) return 'Belum ada jadwal pertandingan.';
+  return '*JADWAL LIGA DESA TENJOAYU*\n\n' + ms.map(m => '\u{1F4C5} ' + tglID(m.tanggal, 1) + ', ' + jamM(m) + ' WIB\n\u26BD ' + K(m.home).nama + ' vs ' + K(m.away).nama).join('\n\n') + PENUTUP;
+}
+function teksHasil() {
+  const ms = urut(D.match.filter(m => m.status === 'Selesai')).reverse().slice(0, 5);
+  return '*HASIL PERTANDINGAN*\n\n' + ms.map(m => {
+    const g = GM().filter(x => x.matchId === m.id && adaP(x.pemainId)).map(x => adaP(x.pemainId).nama + (x.jumlah > 1 ? ' (' + x.jumlah + ')' : '')).join(', ');
+    return '\u26BD ' + K(m.home).nama + ' *' + m.skorHome + ' - ' + m.skorAway + '* ' + K(m.away).nama + (g ? '\nGol: ' + g : '');
+  }).join('\n\n') + PENUTUP;
+}
+function teksKlasemen() {
+  const liga = D.mode === 'liga';
+  return '*KLASEMEN LIGA DESA TENJOAYU*\n\n' + Object.keys(D.klasemen).sort().map(g =>
+    '\u{1F3C6} *' + (liga ? 'Klasemen' : 'Grup ' + g) + '*\n' + D.klasemen[g].map((r, i) => (i + 1) + '. ' + r.nama + ' - ' + r.pts + ' poin (M' + r.m + ', SG ' + (r.sg > 0 ? '+' : '') + r.sg + ')').join('\n')).join('\n\n') + PENUTUP;
+}
+
+const _jd = jadwal;
+jadwal = function (edit) { const h = _jd(edit); return edit || !D.match.length ? h : tmbBagi('teksJadwal') + h; };
+const _hs = hasil;
+hasil = function () { const h = _hs(); return D.match.some(m => m.status === 'Selesai') ? tmbBagi('teksHasil') + h : h; };
+const _kl = klasemen;
+klasemen = function () { return tmbBagi('teksKlasemen') + _kl(); };
+
+// ---------- Pemuatan awal ----------
+function muatPenuh() {
+  google.script.run
+    .withSuccessHandler(function (d) {
+      D = d; window.D = d;
+      const el = document.activeElement;
+      const sibuk = edK || edP || (el && /^(INPUT|SELECT|TEXTAREA)$/.test(el.tagName));
+      if (!sibuk) render();
+    })
+    .withFailureHandler(function () { return 0; })
+    .getData();
+}
+function muatAwal() {
+  panggil('getData', [true], function (d) { load(d); muatPenuh(); });
+  google.script.run.withSuccessHandler(u => {
+  APPURL = u || '';
+  gambarNav();
+  const a = document.getElementById('lnkAdmin');
+  if (a && APPURL && !ADMIN_PAGE) { a.href = APPURL + '?page=Admin'; a.hidden = false; }
+}).withFailureHandler(() => 0).urlApp();
+}
+muatAwal();
+</script>
+<?!= include_('AdminPanel') ?>
+<?!= include_('PublikPanel') ?>
+</body>
+</html>
