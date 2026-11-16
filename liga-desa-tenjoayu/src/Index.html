@@ -765,6 +765,58 @@ button .ui-icon{margin-right:5px}
   #mainSidebar,.nav-backdrop{transition:none!important}
 }
 
+/* ===== BOTTOM NAV + DRAWER (khusus HP) ===== */
+.bnav, .only-mobile { display:none; }
+
+@media (max-width:720px) {
+  /* Bottom navigation */
+  .bnav {
+    display:grid; grid-template-columns:repeat(5,minmax(0,1fr));
+    position:fixed; left:0; right:0; bottom:0; z-index:900;
+    height:calc(62px + env(safe-area-inset-bottom));
+    padding:0 4px env(safe-area-inset-bottom);
+    background:rgba(5,20,37,.97);
+    border-top:1px solid rgba(57,166,238,.28);
+    backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+    box-shadow:0 -8px 24px rgba(0,0,0,.28);
+  }
+  .bnav:empty { display:none; }
+  .bnav .bn {
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px;
+    min-width:0; height:100%; padding:6px 0 4px; margin:0;
+    background:none; border:0; border-radius:0; color:#8fb3d1;
+    font:inherit; cursor:pointer; box-shadow:none;
+  }
+  .bnav .bn-ico { width:40px; height:26px; display:grid; place-items:center; border-radius:14px; transition:background .22s ease, color .22s ease; }
+  .bnav .bn-ico svg { width:21px; height:21px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+  .bnav .bn-lb { font-size:10.5px; line-height:1; font-weight:600; white-space:nowrap; }
+  .bnav .bn.on { color:#fff; }
+  .bnav .bn.on .bn-ico { background:linear-gradient(110deg,#0878d5,#16b7ff); box-shadow:0 4px 14px rgba(0,145,255,.3); }
+  .bnav .bn.on::before {
+    content:""; position:absolute; top:0; left:50%; width:28px; height:3px;
+    transform:translateX(-50%); border-radius:0 0 4px 4px; background:#38baff;
+  }
+
+  /* Konten tidak tertutup bottom nav */
+  body.has-bnav .app > .wrap { padding-bottom:calc(72px + env(safe-area-inset-bottom)) !important; }
+  body.has-bnav .wrap:after { inset:58px 0 62px 0 !important; }
+  #toast { bottom:calc(76px + env(safe-area-inset-bottom)); z-index:1300; }
+
+  /* Drawer: sembunyikan menu yang sudah ada di bottom nav (tanpa duplikat) */
+  body.has-bnav #mainSidebar nav#nav > button.nv-main { display:none !important; }
+  #mainSidebar nav#nav > a.only-mobile { display:flex !important; }
+
+  /* Pastikan drawer & backdrop di atas bottom nav */
+  .app > aside#mainSidebar { z-index:1200 !important; }
+  .nav-backdrop { z-index:1190; }
+}
+
+body.light-mode .bnav { background:rgba(244,249,253,.97); border-top-color:#c8dced; box-shadow:0 -8px 24px rgba(25,91,140,.10); }
+body.light-mode .bnav .bn { color:#58738b; }
+body.light-mode .bnav .bn.on { color:#0a4f85; }
+body.light-mode .bnav .bn.on .bn-ico { color:#fff; }
+@media (prefers-reduced-motion:reduce) { .bnav .bn-ico { transition:none; } }
+
 </style>
 </head>
 <body>
@@ -820,6 +872,7 @@ setTimeout(function () {
     <footer><span>Liga Desa Tenjoayu &copy; <span id="thn"></span> | Sepak Bola untuk Desa Kita</span><i>Powered by Panitia Liga &middot; <a id="lnkAdmin" href="#" target="_top" hidden style="color:inherit;opacity:.65;text-decoration:none">Admin</a></i></footer>
   </div>
 </div>
+<div id="bottomNav" class="bnav" role="navigation" aria-label="Menu utama"></div>
 <div id="toast"></div>
 <script>
 window.SKRIP_JALAN = true;
@@ -908,10 +961,22 @@ const LINK_ICONS = {
   Tv:'<svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="14" rx="2"/><path d="m8 22 4-4 4 4M8 9h8"/></svg>',
   Cetak:'<svg viewBox="0 0 24 24"><path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v7H6z"/></svg>'
 };
+const MAIN_TABS = ['beranda','klasemen','jadwal','hasil','topskor'];
+const BOTTOM = [['beranda','Beranda'],['klasemen','Klasemen'],['jadwal','Jadwal'],['hasil','Hasil'],['topskor','Statistik']];
+
 function gambarNav() {
   document.getElementById('nav').innerHTML = TABS.map(([k,i,l]) =>
-    `<button class="${tab===k?'on':''}" onclick="pindah('${k}')"><span class="nav-ico">${NAV_ICONS[k]||''}</span><span class="lb">${l}</span></button>`).join('')
-    + (APPURL && !ADMIN_PAGE ? '<div class="sep"></div>' + LINKS.map(([p,i,l]) => `<a class="lnk" href="${esc(APPURL)}?page=${p}" target="_top"><span class="nav-ico">${LINK_ICONS[p]||''}</span><span class="lb">${l}</span></a>`).join('') : '');
+    `<button class="${tab===k?'on':''}${MAIN_TABS.includes(k)?' nv-main':''}" onclick="pindah('${k}')"><span class="nav-ico">${NAV_ICONS[k]||''}</span><span class="lb">${l}</span></button>`).join('')
+    + (APPURL && !ADMIN_PAGE ? '<div class="sep"></div>' + LINKS.map(([p,i,l]) => `<a class="lnk" href="${esc(APPURL)}?page=${p}" target="_top"><span class="nav-ico">${LINK_ICONS[p]||''}</span><span class="lb">${l}</span></a>`).join('')
+      + `<a class="lnk only-mobile" href="${esc(APPURL)}?page=Admin" target="_top"><span class="nav-ico">${NAV_ICONS.admin}</span><span class="lb">Kelola (Admin)</span></a>` : '');
+  gambarBottom();
+}
+function gambarBottom() {
+  const b = document.getElementById('bottomNav');
+  if (!b) return;
+  document.body.classList.toggle('has-bnav', !ADMIN_PAGE);
+  b.innerHTML = ADMIN_PAGE ? '' : BOTTOM.map(([k,l]) =>
+    `<button type="button" class="bn${tab===k?' on':''}" onclick="pindah('${k}')" aria-label="${l}"${tab===k?' aria-current="page"':''}><span class="bn-ico">${NAV_ICONS[k]||''}</span><span class="bn-lb">${l}</span></button>`).join('');
 }
 
 const HEAD_ICONS = {
