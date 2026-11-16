@@ -816,7 +816,283 @@ body.light-mode .bnav .bn { color:#58738b; }
 body.light-mode .bnav .bn.on { color:#0a4f85; }
 body.light-mode .bnav .bn.on .bn-ico { color:#fff; }
 @media (prefers-reduced-motion:reduce) { .bnav .bn-ico { transition:none; } }
+/* =========================================================
+   HEADER HP — FINAL MOBILE CLEANUP
+   Tidak mengubah fungsi JavaScript/header.
+   Hanya merapikan posisi dan ukuran tampilan HP.
+   ========================================================= */
 
+@media (max-width: 720px) {
+
+  .topbar {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 80 !important;
+
+    width: 100% !important;
+    min-height: 58px !important;
+    height: 58px !important;
+
+    display: grid !important;
+    grid-template-columns: 38px minmax(0, 1fr) auto !important;
+    align-items: center !important;
+
+    gap: 7px !important;
+    padding: 6px 9px !important;
+
+    overflow: visible !important;
+  }
+
+  /* =========================
+     TOMBOL MENU
+     ========================= */
+
+  .topbar-left {
+    display: contents !important;
+  }
+
+  .menu-toggle {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+
+    border-radius: 10px !important;
+  }
+
+  /* =========================
+     TANGGAL / INFORMASI
+     ========================= */
+
+  .top-date {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+
+    min-width: 0 !important;
+    width: 100% !important;
+
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+
+    overflow: hidden !important;
+
+    font-size: 10px !important;
+    line-height: 1.2 !important;
+  }
+
+  .top-date .live-dot {
+    width: 7px !important;
+    height: 7px !important;
+    min-width: 7px !important;
+  }
+
+  .top-date .live-label {
+    display: inline !important;
+
+    font-size: 10px !important;
+    font-weight: 800 !important;
+
+    white-space: nowrap !important;
+  }
+
+  .top-date .date-sep {
+    display: inline !important;
+    color: #4f7799 !important;
+  }
+
+  .top-date #tgl {
+    min-width: 0 !important;
+    max-width: 100% !important;
+
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+
+    font-size: 9.5px !important;
+  }
+
+  /* =========================
+     BAGIAN KANAN HEADER
+     ========================= */
+
+  .topbar-actions {
+    grid-column: 3 !important;
+    grid-row: 1 !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+
+    gap: 5px !important;
+    min-width: 0 !important;
+  }
+
+  /* =========================
+     ICON HEADER
+     ========================= */
+
+  .topbar-actions .icon-btn {
+    width: 34px !important;
+    height: 34px !important;
+    min-width: 34px !important;
+    min-height: 34px !important;
+
+    padding: 0 !important;
+    margin: 0 !important;
+
+    border-radius: 50% !important;
+  }
+
+  .topbar-actions .svg-icon {
+    width: 16px !important;
+    height: 16px !important;
+  }
+
+  /* =========================
+     PENGATURAN & TEMA
+     Tetap ada, tetapi dibuat lebih kecil.
+     ========================= */
+
+  .topbar-actions > .head-action-wrap:nth-child(2),
+  .topbar-actions > .theme-toggle {
+    display: none !important;
+  }
+
+  /* =========================
+     PROFIL
+     ========================= */
+
+  .profile-wrap {
+    display: block !important;
+    flex: 0 0 auto !important;
+  }
+
+  .profile-btn {
+    width: auto !important;
+    min-width: 34px !important;
+    height: 36px !important;
+
+    padding: 3px 6px 3px 3px !important;
+    margin: 0 !important;
+
+    gap: 5px !important;
+    border-radius: 20px !important;
+  }
+
+  .profile-avatar {
+    width: 29px !important;
+    height: 29px !important;
+    min-width: 29px !important;
+
+    font-size: 11px !important;
+  }
+
+  .profile-name {
+    display: none !important;
+  }
+
+  .chevron {
+    display: none !important;
+  }
+
+  /* =========================
+     BADGE NOTIFIKASI
+     ========================= */
+
+  .notif-count {
+    right: -2px !important;
+    top: -3px !important;
+
+    min-width: 15px !important;
+    height: 15px !important;
+
+    padding: 0 3px !important;
+
+    font-size: 9px !important;
+    border-width: 1.5px !important;
+  }
+
+  /* =========================
+     PANEL NOTIFIKASI / PROFIL
+     ========================= */
+
+  .head-panel {
+    position: fixed !important;
+
+    top: 64px !important;
+    right: 8px !important;
+    left: auto !important;
+
+    width: min(320px, calc(100vw - 16px)) !important;
+    max-width: calc(100vw - 16px) !important;
+
+    max-height: 65vh !important;
+
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+
+    border-radius: 14px !important;
+  }
+
+  /* =========================
+     HEADER HP SANGAT KECIL
+     ========================= */
+
+  @media (max-width: 380px) {
+
+    .topbar {
+      grid-template-columns: 35px minmax(0, 1fr) auto !important;
+      gap: 5px !important;
+      padding-left: 7px !important;
+      padding-right: 7px !important;
+    }
+
+    .menu-toggle {
+      width: 34px !important;
+      height: 34px !important;
+      min-width: 34px !important;
+    }
+
+    .top-date {
+      gap: 4px !important;
+    }
+
+    .top-date .live-label {
+      font-size: 9px !important;
+    }
+
+    .top-date #tgl {
+      font-size: 8.5px !important;
+    }
+
+    .topbar-actions {
+      gap: 4px !important;
+    }
+
+    .topbar-actions .icon-btn {
+      width: 32px !important;
+      height: 32px !important;
+      min-width: 32px !important;
+    }
+
+    .profile-btn {
+      width: 32px !important;
+      height: 34px !important;
+      padding: 2px !important;
+    }
+
+    .profile-avatar {
+      width: 28px !important;
+      height: 28px !important;
+      min-width: 28px !important;
+    }
+  }
+}
 </style>
 </head>
 <body>
