@@ -1,83 +1,339 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
 <base target="_top">
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#061426">
+<title>Liga Desa Tenjoayu - Layar TV</title>
 <style>
-  :root { --bg:#07111f; --card:#0c1b2c; --line:#17324a; --txt:#e8f0f7; --mut:#8ca3b8; --acc:#22c55e; }
-  * { box-sizing:border-box; }
-  body { margin:0; font-family:system-ui,sans-serif; background:radial-gradient(circle at 50% 0,#0b3b1f 0,var(--bg) 55%); color:var(--txt); min-height:100vh; padding:2vw; }
-  header { display:flex; justify-content:space-between; align-items:center; margin-bottom:2vw; }
-  header h1 { margin:0; font-size:clamp(22px,3.2vw,48px); } header h1 span { color:var(--acc); font-style:italic; }
-  #jam { font-size:clamp(18px,2.4vw,36px); font-weight:700; }
-  .grid { display:grid; grid-template-columns:1.2fr 1fr; gap:2vw; }
-  .card { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:1.4vw; margin-bottom:2vw; animation:masuk .6s ease; }
-  @keyframes masuk { from { opacity:0; transform:translateY(20px); } }
-  h2 { margin:0 0 1vw; font-size:clamp(16px,1.8vw,28px); }
-  .mut { color:var(--mut); }
-  .next { display:grid; grid-template-columns:1fr auto 1fr; align-items:center; text-align:center; gap:1vw; font-size:clamp(14px,1.8vw,28px); font-weight:700; }
-  .next .vs { font-size:clamp(28px,4vw,64px); font-style:italic; }
-  .logo { width:clamp(56px,8vw,130px); height:clamp(56px,8vw,130px); border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-weight:700; font-size:clamp(20px,3vw,44px); color:#fff; object-fit:cover; border:3px solid rgba(255,255,255,.25); }
-  .logo.sm { width:clamp(26px,2.6vw,42px); height:clamp(26px,2.6vw,42px); font-size:clamp(10px,1vw,16px); border-width:1px; }
-  .jamb { display:inline-block; background:#15803d; border-radius:10px; padding:.2em .7em; margin:.4em 0; }
-  table { width:100%; border-collapse:collapse; font-size:clamp(14px,1.7vw,26px); }
-  th, td { padding:.5vw .3vw; text-align:center; border-bottom:1px solid var(--line); }
-  th { color:var(--mut); } th:nth-child(2), td:nth-child(2) { text-align:left; }
-  tr.first td { background:#14532d; }
-  .pts { color:#facc15; font-weight:800; }
-  .tim { display:flex; align-items:center; gap:.6em; }
-  .hasil { display:grid; grid-template-columns:1fr auto 1fr; gap:1vw; align-items:center; padding:.6vw 0; border-bottom:1px solid var(--line); font-size:clamp(14px,1.6vw,24px); }
-  .hasil .r { justify-content:flex-end; text-align:right; } .hasil b { text-align:center; min-width:3em; }
-  .ts { display:flex; justify-content:space-between; padding:.6vw 0; border-bottom:1px solid var(--line); font-size:clamp(14px,1.7vw,26px); }
-  #err { color:#fca5a5; }
-  @media (max-width:800px){ .grid { grid-template-columns:1fr; } }
+:root{--bg:#030b18;--card:#0b2038;--line:rgba(44,137,203,.28);--txt:#edf6ff;--mut:#9bb5ce;--acc:#1597f6;--acc2:#0874c9;--cy:#38baff;--gold:#ffd166;--live:#ef4444;--ok:#22c55e}
+*{box-sizing:border-box}
+html{font-size:15px;-webkit-text-size-adjust:100%}
+@media(min-width:900px){html{font-size:16px}}
+@media(min-width:1300px){html{font-size:clamp(17px,1.25vw,30px)}}
+body{margin:0;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;color:var(--txt);overflow-x:hidden;
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  background:radial-gradient(ellipse at 76% 4%,rgba(0,133,255,.22),transparent 36%),radial-gradient(ellipse at 30% 100%,rgba(0,83,170,.16),transparent 45%),#030b18}
+.mut{color:var(--mut)}
+/* ===== header ===== */
+.hd{position:sticky;top:0;z-index:50;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:.8rem;
+  padding:.65rem 1rem;padding-top:max(.65rem,env(safe-area-inset-top));
+  background:rgba(4,17,32,.9);border-bottom:1px solid var(--line);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.brand{display:flex;align-items:center;gap:.7rem;min-width:0}
+.mark{width:2.6rem;height:2.6rem;border-radius:.8rem;display:grid;place-items:center;flex:none;
+  background:linear-gradient(145deg,#0874c9,#20aaff);box-shadow:0 6px 18px rgba(0,132,220,.3)}
+.mark svg{width:1.5rem;height:1.5rem;fill:none;stroke:#fff;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.brand b{display:block;font-size:1.05rem;letter-spacing:.06em;line-height:1.1}
+.brand span{display:block;font-size:.8rem;letter-spacing:.2em;color:var(--cy);font-weight:700}
+.hd-mid{display:flex;justify-content:center}
+.hd-r{display:flex;align-items:center;gap:.7rem;text-align:right}
+.clock{font-size:1.25rem;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.1}
+.dt{font-size:.75rem;color:var(--mut)}
+.ib{width:2.4rem;height:2.4rem;border-radius:50%;border:1px solid var(--line);background:rgba(19,64,101,.6);color:#eaf6ff;display:grid;place-items:center;cursor:pointer;flex:none}
+.ib svg{width:1.1rem;height:1.1rem;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.ib:hover{border-color:var(--cy)}
+.conn{width:.55rem;height:.55rem;border-radius:50%;background:var(--ok);display:inline-block;margin-right:.35rem;vertical-align:middle}
+.conn.off{background:#f59e0b}
+.pill{display:inline-flex;align-items:center;gap:.45rem;padding:.28rem .8rem;border-radius:999px;font-weight:800;font-size:.85rem;letter-spacing:.08em}
+.pill.live{background:var(--live);color:#fff;box-shadow:0 0 18px rgba(239,68,68,.45)}
+.pill.live i{width:.55rem;height:.55rem;border-radius:50%;background:#fff;animation:blink 1s ease-in-out infinite}
+@keyframes blink{50%{opacity:.25}}
+/* ===== layout ===== */
+main{flex:1;width:100%;max-width:1700px;margin:0 auto;padding:1rem;padding-bottom:3.6rem}
+.cols{display:grid;grid-template-columns:1fr;gap:1rem}
+@media(min-width:900px){.cols{grid-template-columns:1.15fr 1fr}}
+.col{display:flex;flex-direction:column;gap:1rem;min-width:0}
+.card{background:linear-gradient(145deg,rgba(13,39,66,.96),rgba(7,25,45,.97));border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 9px 28px rgba(0,0,0,.18)}
+.ch{display:flex;justify-content:space-between;align-items:center;gap:.6rem;padding:.75rem 1rem;font-weight:700;font-size:1rem;border-bottom:1px solid var(--line)}
+.ch small{color:var(--mut);font-weight:600}
+.ch svg{width:1.1rem;height:1.1rem;fill:none;stroke:var(--cy);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;vertical-align:-.2em;margin-right:.4rem}
+.empty{padding:1.2rem 1rem;color:var(--mut);text-align:center}
+.first .card{animation:rise .5s ease both}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}}
+/* ===== logo ===== */
+.logo{width:2rem;height:2rem;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:.75rem;color:#fff;object-fit:cover;border:2px solid rgba(255,255,255,.22);flex:none}
+.logo.xl{width:clamp(4.2rem,16vw,8rem);height:clamp(4.2rem,16vw,8rem);font-size:clamp(1.3rem,5vw,2.6rem);border-width:3px}
+.logo.sm{width:1.6rem;height:1.6rem;font-size:.6rem;border-width:1px}
+.tim{display:flex;align-items:center;gap:.55rem;min-width:0}
+.tim span.n{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tim.r{justify-content:flex-end;text-align:right}
+/* ===== berikutnya ===== */
+.next{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;text-align:center;gap:.5rem;padding:1.2rem .8rem;background:linear-gradient(130deg,#061d37,#07518b)}
+.next .t b{display:block;margin-top:.5rem;font-size:clamp(.9rem,2.6vw,1.45rem);overflow-wrap:anywhere}
+.vs{font-size:clamp(1.6rem,5vw,3rem);font-weight:900;font-style:italic;color:#dff3ff}
+.jam{display:inline-block;background:#086fc0;border-radius:8px;padding:.25rem .8rem;margin:.4rem 0;font-weight:800}
+.cd{font-variant-numeric:tabular-nums;font-weight:800;color:var(--gold);font-size:1.1rem;margin-top:.2rem}
+/* ===== daftar pertandingan ===== */
+.mrow{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:.5rem;padding:.65rem 1rem;border-top:1px solid var(--line);font-size:.95rem}
+.mrow:first-of-type{border-top:0}
+.mrow .sk{font-weight:800;min-width:3.4rem;text-align:center;font-variant-numeric:tabular-nums}
+.mrow .sk.bl{color:var(--cy);font-size:.85rem}
+.mdt{padding:.5rem 1rem 0;font-size:.75rem;color:var(--mut)}
+.gl{padding:0 1rem .55rem;font-size:.78rem;color:var(--mut)}
+/* ===== tabel ===== */
+table{width:100%;border-collapse:collapse;font-size:.95rem}
+th,td{padding:.5rem .35rem;text-align:center;border-bottom:1px solid var(--line)}
+th{color:var(--mut);font-weight:600;font-size:.8rem}
+th:nth-child(2),td:nth-child(2){text-align:left}
+th:first-child,td:first-child{padding-left:.8rem;width:2rem}
+th:last-child,td:last-child{padding-right:.8rem}
+tr:last-child td{border-bottom:0}
+tr.q td:first-child{box-shadow:inset 3px 0 var(--cy)}
+tr.pl td{background:rgba(0,116,207,.26)}
+.pts{color:var(--gold);font-weight:800;font-size:1.05rem}
+.gh{padding:.45rem 1rem;font-size:.78rem;font-weight:700;letter-spacing:.08em;color:var(--cy);background:rgba(0,0,0,.18)}
+.ts{display:grid;grid-template-columns:1.6rem 1fr auto;gap:.6rem;align-items:center;padding:.65rem 1rem;border-top:1px solid var(--line)}
+.ts:first-of-type{border-top:0}
+.ts b.g{color:var(--gold)}
+/* ===== LIVE ===== */
+.lv{margin-bottom:1rem;border:1px solid rgba(239,68,68,.5);border-radius:20px;padding:1rem;position:relative;overflow:hidden;
+  background:linear-gradient(145deg,#0b2d4c,#071a2e 60%,#0b3658);box-shadow:0 0 44px rgba(239,68,68,.12)}
+.lv-meta{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:.6rem;color:var(--mut);font-size:.85rem;text-align:center}
+.lv-min{color:#fff;font-weight:800;font-variant-numeric:tabular-nums}
+.lv-main{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:.6rem;text-align:center;margin:1rem 0 .6rem}
+.lv-team b{display:block;margin-top:.5rem;font-size:clamp(.95rem,2.6vw,1.7rem);overflow-wrap:anywhere}
+.lv-sc{font-size:clamp(2.8rem,10vw,7rem);font-weight:900;font-variant-numeric:tabular-nums;letter-spacing:.04em;line-height:1;white-space:nowrap}
+.lv-sc em{color:var(--mut);font-style:normal;margin:0 .1em}
+.lv-g{display:grid;grid-template-columns:1fr 1fr;gap:1rem;font-size:.9rem;padding-top:.7rem;border-top:1px solid var(--line)}
+.lv-g div:first-child{text-align:right}
+.lv-g .gi{padding:.12rem 0}
+.ev{display:grid;grid-template-columns:3rem 1fr;gap:.5rem;padding:.3rem 0;font-size:.85rem;border-top:1px dashed var(--line)}
+.ev .m{color:var(--cy);font-weight:800}
+.evs{margin-top:.7rem}
+/* ===== gol & ticker ===== */
+.goal{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;flex-direction:column;text-align:center;pointer-events:none;
+  background:radial-gradient(circle,rgba(21,151,246,.55),rgba(3,11,24,.88) 70%)}
+.goal.on{display:flex;animation:gin .35s ease both}
+.goal h1{margin:0;font-size:clamp(4rem,22vw,14rem);font-style:italic;font-weight:900;letter-spacing:.04em;animation:pop .7s ease infinite alternate}
+.goal p{margin:.6rem 0 0;font-size:clamp(1.1rem,4vw,2.4rem);font-weight:700}
+@keyframes gin{from{opacity:0}}
+@keyframes pop{to{transform:scale(1.07)}}
+.tk{position:fixed;left:0;right:0;bottom:0;z-index:60;display:flex;align-items:center;height:2.5rem;padding-bottom:env(safe-area-inset-bottom);
+  background:rgba(4,17,32,.96);border-top:1px solid var(--line);overflow:hidden;box-sizing:content-box}
+.tk .lb{flex:none;background:linear-gradient(110deg,#0878d5,#16b7ff);color:#fff;font-weight:800;font-size:.75rem;letter-spacing:.1em;padding:0 .9rem;height:100%;display:flex;align-items:center}
+.tk .vw{flex:1;overflow:hidden;white-space:nowrap}
+.mq{display:inline-block;white-space:nowrap;animation:mq 30s linear infinite;font-size:.9rem}
+.mq span{display:inline-block;padding-right:4rem}
+@keyframes mq{to{transform:translateX(-50%)}}
+@media(max-width:600px){
+  .hd{grid-template-columns:1fr auto;padding:.5rem .7rem}
+  .hd-mid{grid-column:1 / -1;grid-row:2}
+  .hd-mid:empty{display:none}
+  .brand b{font-size:.95rem}.clock{font-size:1.05rem}
+  main{padding:.7rem}
+  .dt{font-size:.68rem}
+  #fs{display:none}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important}.mq{transform:none}}
 </style>
 </head>
 <body>
-<header><h1>Liga Desa <span>Tenjoayu</span></h1><div id="jam"></div></header>
-<div id="app" class="mut">Memuat data...</div>
-<div id="err"></div>
-<script>
-let D = null;
-const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const K = id => D.klub.find(k => k.id === id) || {nama:'?', warna:'#555'};
-const logo = (k, sm) => k.logo ? `<img class="logo ${sm ? 'sm' : ''}" src="${esc(k.logo)}" alt="">`
-  : `<span class="logo ${sm ? 'sm' : ''}" style="background:${esc(k.warna)}">${esc(String(k.nama).split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase())}</span>`;
-const urut = a => a.slice().sort((x, y) => String(x.tanggal).localeCompare(String(y.tanggal)));
-function tglID(s) {
-  const p = String(s).slice(0, 10).split('-');
-  return new Date(+p[0], +p[1] - 1, +p[2]).toLocaleDateString('id-ID', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
-}
-function tim(id, right) { const k = K(id); return `<div class="tim ${right ? 'r' : ''}">${right ? esc(k.nama) + logo(k, 1) : logo(k, 1) + esc(k.nama)}</div>`; }
+<header class="hd">
+  <div class="brand">
+    <div class="mark"><svg viewBox="0 0 24 24"><path d="M12 2 20 5v6c0 5-3.4 8.5-8 11-4.6-2.5-8-6-8-11V5Z"/><path d="m8.5 12 2.2 2.2 4.8-5"/></svg></div>
+    <div><b>LIGA DESA</b><span>TENJOAYU</span></div>
+  </div>
+  <div class="hd-mid"><span id="liveBadge" class="pill live" hidden><i></i>LIVE</span></div>
+  <div class="hd-r">
+    <div><div class="clock" id="jam">--:--:--</div><div class="dt"><span id="conn" class="conn"></span><span id="tgl"></span></div></div>
+    <button class="ib" id="fs" type="button" aria-label="Layar penuh" onclick="toggleFs()"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+  </div>
+</header>
 
-function tampil() {
-  const nx = urut(D.match.filter(m => m.status !== 'Selesai'))[0];
-  const selesai = urut(D.match.filter(m => m.status === 'Selesai')).reverse().slice(0, 5);
-  const kl = [].concat(...Object.values(D.klasemen)).sort((a, b) => b.pts - a.pts || b.sg - a.sg || b.gm - a.gm).slice(0, 8);
-  const ts = (D.topSkor || []).slice(0, 5);
-  const next = nx ? `<div class="next"><div>${logo(K(nx.home))}<div>${esc(K(nx.home).nama)}</div></div>
-      <div><div class="vs">VS</div><div class="jamb">${esc(String(nx.tanggal).slice(11, 16) || '15:00')} WIB</div><div class="mut">${tglID(nx.tanggal)}</div></div>
-      <div>${logo(K(nx.away))}<div>${esc(K(nx.away).nama)}</div></div></div>` : '<p class="mut">Belum ada pertandingan terjadwal.</p>';
-  document.getElementById('app').innerHTML = `<div class="grid"><div>
-    <div class="card"><h2>&#127942; Pertandingan Berikutnya</h2>${next}</div>
-    <div class="card"><h2>&#9917; Hasil Terakhir</h2>${selesai.map(m => `<div class="hasil">${tim(m.home, 1)}<b>${m.skorHome} - ${m.skorAway}</b>${tim(m.away)}</div>`).join('') || '<p class="mut">Belum ada hasil.</p>'}</div>
-    </div><div>
-    <div class="card"><h2>&#128202; Klasemen</h2><table><tr><th>#</th><th>Klub</th><th>M</th><th>SG</th><th>Poin</th></tr>
-      ${kl.map((r, i) => `<tr class="${i === 0 ? 'first' : ''}"><td>${i + 1}</td><td><div class="tim">${logo(K(r.id), 1)}${esc(r.nama)}</div></td><td>${r.m}</td><td>${r.sg > 0 ? '+' : ''}${r.sg}</td><td class="pts">${r.pts}</td></tr>`).join('')}</table></div>
-    <div class="card"><h2>&#129351; Top Score</h2>${ts.map((p, i) => `<div class="ts"><span>${i + 1}. ${esc(p.nama)} <span class="mut">(${esc(K(p.klubId).nama)})</span></span><b>${p.gol} Gol</b></div>`).join('') || '<p class="mut">Belum ada gol.</p>'}</div>
+<main id="app" class="first"><div class="empty">Memuat data...</div></main>
+
+<div id="goal" class="goal"><h1>GOL!</h1><p id="goalTxt"></p></div>
+<div class="tk"><div class="lb">INFO</div><div class="vw"><div class="mq" id="mq"></div></div></div>
+
+<script>
+let D = null, LOGOS = {}, LIVE_ID = null, PREV = {}, OFF = false, TKT = '', timer = null, firstDone = false;
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const low = s => String(s || '').toLowerCase();
+const K = id => (D && D.klub.find(k => k.id === id)) || { nama: '?', warna: '#555' };
+const inisial = n => String(n).split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+const logo = (k, c) => k.logo ? `<img class="logo ${c || ''}" src="${esc(k.logo)}" alt="">`
+  : `<span class="logo ${c || ''}" style="background:${esc(k.warna || '#475569')}">${esc(inisial(k.nama))}</span>`;
+const tim = (id, right) => { const k = K(id); return `<div class="tim ${right ? 'r' : ''}">${right ? `<span class="n">${esc(k.nama)}</span>${logo(k, 'sm')}` : `${logo(k, 'sm')}<span class="n">${esc(k.nama)}</span>`}</div>`; };
+const urut = a => a.slice().sort((x, y) => String(x.tanggal).localeCompare(String(y.tanggal)));
+const jamM = m => String(m.tanggal).slice(11, 16) || '15:00';
+function tglID(s, pendek) {
+  const p = String(s).slice(0, 10).split('-');
+  return new Date(+p[0], +p[1] - 1, +p[2]).toLocaleDateString('id-ID', pendek ? { day: 'numeric', month: 'short' } : { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+}
+function mulaiMs(m) {
+  const t = String(m.tanggal || '').match(/(\d{4})-(\d{2})-(\d{2})(?:[ T](\d{2}):(\d{2}))?/);
+  return t ? new Date(+t[1], +t[2] - 1, +t[3], +(t[4] || 15), +(t[5] || 0)).getTime() : NaN;
+}
+
+/* ===== deteksi LIVE (otomatis + pengaturan admin) ===== */
+function statusLive(s) { return s && s !== 'belum' && s !== 'selesai' && /langsung|live|berjalan|babak|jeda|istirahat|main|perpanjangan|pinalti/.test(s); }
+function cariLive() {
+  if (!D) return null;
+  const t = D.tv || {}, now = Date.now();
+  if (t.live === 'mati') return null;
+  if (t.live === 'paksa' && t.matchId) { const f = D.match.find(x => x.id === t.matchId); if (f) return f; }
+  const dur = (Number(t.durasi) || 100) * 60000;
+  return urut(D.match).filter(m => {
+    const s = low(m.status);
+    if (s === 'selesai') return false;
+    if (statusLive(s)) return true;
+    const st = mulaiMs(m);
+    return st <= now && now < st + dur;
+  })[0] || null;
+}
+
+/* ===== komponen ===== */
+const ICO = {
+  cup: '<svg viewBox="0 0 24 24"><path d="M7 4h10v5a5 5 0 0 1-10 0Z"/><path d="M7 6H4v2a4 4 0 0 0 4 4m9-6h3v2a4 4 0 0 1-4 4M12 14v5m-4 2h8"/></svg>',
+  cal: '<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4m10-4v4M3 10h18"/></svg>',
+  bar: '<svg viewBox="0 0 24 24"><path d="M4 20V11h4v9M10 20V4h4v16M16 20v-7h4v7"/></svg>',
+  ball: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m12 7 3 2-1 4h-4l-1-4Zm-3 2-3 1m8 0 4 1m-8 3-2 4m5-4 2 4"/></svg>',
+  star: '<svg viewBox="0 0 24 24"><path d="m12 2 2.7 5.5 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1-4.4-4.3 6.1-.9Z"/></svg>'
+};
+const head = (ic, t, r) => `<div class="ch"><span>${ICO[ic]}${t}</span>${r ? `<small>${r}</small>` : ''}</div>`;
+
+function cardNext(nx) {
+  if (!nx) return `<div class="card">${head('cup', 'Pertandingan Berikutnya')}<div class="empty">Belum ada pertandingan terjadwal.</div></div>`;
+  const h = K(nx.home), a = K(nx.away);
+  return `<div class="card">${head('cup', 'Pertandingan Berikutnya', esc(nx.fase) + (nx.ronde && nx.fase !== 'Semifinal' && nx.fase !== 'Final' ? ' &middot; Ronde ' + esc(nx.ronde) : ''))}
+    <div class="next">
+      <div class="t">${logo(h, 'xl')}<b>${esc(h.nama)}</b></div>
+      <div><div class="vs">VS</div><div class="jam">${esc(jamM(nx))} WIB</div><div class="mut">${tglID(nx.tanggal)}</div><div class="mut">${esc(h.stadion || 'Lapangan')}</div><div class="cd" id="cd" data-t="${mulaiMs(nx)}"></div></div>
+      <div class="t">${logo(a, 'xl')}<b>${esc(a.nama)}</b></div>
     </div></div>`;
 }
-
-function muat() {
-  google.script.run
-    .withSuccessHandler(d => { D = d; document.getElementById('err').textContent = ''; tampil(); })
-    .withFailureHandler(e => { document.getElementById('err').textContent = 'Gagal memuat: ' + (e.message || e); })
-    .getData();
+function cardUpcoming(list) {
+  if (!list.length) return '';
+  return `<div class="card">${head('cal', 'Jadwal Mendatang')}${list.map(m => `<div class="mdt">${tglID(m.tanggal, 1)} &middot; ${esc(jamM(m))} WIB &middot; ${esc(m.fase)}</div><div class="mrow" style="border-top:0">${tim(m.home, 1)}<div class="sk bl">vs</div>${tim(m.away)}</div>`).join('')}</div>`;
 }
-function jam() { document.getElementById('jam').textContent = new Date().toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit', second:'2-digit'}) + ' WIB'; }
-jam(); setInterval(jam, 1000);
-muat(); setInterval(muat, 30000);
+function golText(m) {
+  const g = (D.golMatch || []).filter(x => x.matchId === m.id).map(x => { const p = D.pemain.find(q => q.id === x.pemainId); return p ? esc(p.nama) + (x.jumlah > 1 ? ' (' + x.jumlah + ')' : '') : ''; }).filter(Boolean);
+  return g.length ? `<div class="gl">Gol: ${g.join(', ')}</div>` : '';
+}
+function cardHasil() {
+  const ms = urut(D.match.filter(m => low(m.status) === 'selesai')).reverse().slice(0, 5);
+  return `<div class="card">${head('ball', 'Hasil Terakhir')}${ms.length ? ms.map(m => `<div class="mdt">${tglID(m.tanggal, 1)} &middot; ${esc(m.fase)}</div><div class="mrow" style="border-top:0">${tim(m.home, 1)}<div class="sk">${esc(m.skorHome)} - ${esc(m.skorAway)}</div>${tim(m.away)}</div>${golText(m)}`).join('') : '<div class="empty">Belum ada hasil pertandingan.</div>'}</div>`;
+}
+function cardKlasemen(lv) {
+  const liga = D.mode === 'liga', kl = D.klasemen || {};
+  const main = lv ? [lv.home, lv.away] : [];
+  return `<div class="card">${head('bar', 'Klasemen')}` + Object.keys(kl).sort().map(g => `${liga ? '' : `<div class="gh">GRUP ${esc(g)}</div>`}
+    <table><tr><th>#</th><th>Klub</th><th>M</th><th>SG</th><th>Poin</th></tr>${kl[g].map((r, i) => `<tr class="${!liga && i < 2 ? 'q' : ''} ${main.indexOf(r.id) >= 0 ? 'pl' : ''}"><td>${i + 1}</td><td>${tim(r.id)}</td><td>${r.m}</td><td>${r.sg > 0 ? '+' : ''}${r.sg}</td><td class="pts">${r.pts}</td></tr>`).join('')}</table>`).join('') + `</div>`;
+}
+function cardTop() {
+  const t = (D.topSkor || []).slice(0, 5);
+  return `<div class="card">${head('star', 'Top Score')}${t.length ? t.map((p, i) => `<div class="ts"><b>${i + 1}</b><div class="tim">${logo(K(p.klubId), 'sm')}<span class="n">${esc(p.nama)} <span class="mut">(${esc(K(p.klubId).nama)})</span></span></div><b class="g">${p.gol} Gol</b></div>`).join('') : '<div class="empty">Belum ada gol tercatat.</div>'}</div>`;
+}
+function eventList(m) {
+  const arr = Array.isArray(D.kejadian) ? D.kejadian.filter(e => e && e.matchId === m.id && e.menit !== undefined && (e.jenis || e.tipe)) : [];
+  if (!arr.length) return '';
+  arr.sort((a, b) => (Number(b.menit) || 0) - (Number(a.menit) || 0));
+  return '<div class="evs">' + arr.slice(0, 6).map(e => { const p = D.pemain.find(q => q.id === e.pemainId); return `<div class="ev"><span class="m">${esc(e.menit)}'</span><span>${esc(e.jenis || e.tipe)}${p ? ' - ' + esc(p.nama) : (e.pemain ? ' - ' + esc(e.pemain) : '')}</span></div>`; }).join('') + '</div>';
+}
+function liveView(m) {
+  const h = K(m.home), a = K(m.away), sh = +m.skorHome || 0, sa = +m.skorAway || 0;
+  const g = (D.golMatch || []).filter(x => x.matchId === m.id);
+  const nm = x => { const p = D.pemain.find(q => q.id === x.pemainId); return p ? `<div class="gi">${esc(p.nama)}${x.jumlah > 1 ? ' &times;' + x.jumlah : ''}</div>` : ''; };
+  const stat = statusLive(low(m.status)) ? esc(m.status) : '';
+  return `<section class="lv">
+    <div class="lv-meta"><span class="pill live"><i></i>LIVE</span><span class="lv-min" id="lmin"></span>${stat ? `<span>${stat}</span>` : ''}<span>${esc(m.fase)}${m.grup ? ' &middot; Grup ' + esc(m.grup) : ''}</span><span>${esc(h.stadion || 'Lapangan')}</span></div>
+    <div class="lv-main">
+      <div class="lv-team">${logo(h, 'xl')}<b>${esc(h.nama)}</b></div>
+      <div class="lv-sc">${sh}<em>-</em>${sa}</div>
+      <div class="lv-team">${logo(a, 'xl')}<b>${esc(a.nama)}</b></div>
+    </div>
+    ${g.length ? `<div class="lv-g"><div>${g.filter(x => x.klubId === m.home).map(nm).join('')}</div><div>${g.filter(x => x.klubId === m.away).map(nm).join('')}</div></div>` : ''}
+    ${eventList(m)}
+  </section>`;
+}
+
+/* ===== render ===== */
+function render() {
+  if (!D) return;
+  const lv = cariLive();
+  LIVE_ID = lv ? lv.id : null;
+  $('liveBadge').hidden = !lv;
+  const sisa = urut(D.match.filter(m => low(m.status) !== 'selesai' && (!lv || m.id !== lv.id)));
+  const left = lv ? cardUpcoming(sisa.slice(0, 4)) + cardHasil() : cardNext(sisa[0]) + cardUpcoming(sisa.slice(1, 5)) + cardHasil();
+  const ap = $('app');
+  ap.className = firstDone ? '' : 'first';
+  ap.innerHTML = (lv ? liveView(lv) : '') + `<div class="cols"><div class="col">${left}</div><div class="col">${cardKlasemen(lv)}${cardTop()}</div></div>`;
+  firstDone = true;
+  ticker();
+  tick();
+}
+function ticker() {
+  const t = (D.tv && D.tv.pengumuman) || 'Liga Desa Tenjoayu - Satu Lapangan, Satu Semangat, Menuju Juara!';
+  if (t === TKT) return;
+  TKT = t;
+  const mq = $('mq');
+  mq.innerHTML = `<span>${esc(t)}</span><span>${esc(t)}</span>`;
+  mq.style.animationDuration = Math.max(20, t.length * 0.35) + 's';
+}
+
+/* ===== detik demi detik: jam, hitung mundur, menit live ===== */
+function tick() {
+  const n = new Date();
+  $('jam').textContent = n.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' }).replace(/\./g, ':') + ' WIB';
+  $('tgl').textContent = n.toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+  if (!D) return;
+  const lv = cariLive();
+  if ((lv ? lv.id : null) !== LIVE_ID) return render(); // pertandingan mulai / berakhir -> ganti tampilan otomatis
+  const cd = $('cd');
+  if (cd) {
+    const d = Number(cd.dataset.t) - Date.now();
+    if (isNaN(d)) cd.textContent = '';
+    else if (d <= 0) cd.textContent = 'Segera dimulai';
+    else { const s = Math.floor(d / 1000), j = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), dt = s % 60; cd.textContent = 'Mulai dalam ' + (j > 23 ? Math.floor(j / 24) + ' hari ' + (j % 24) + ' jam' : [j, m, dt].map(x => String(x).padStart(2, '0')).join(':')); }
+  }
+  const lm = $('lmin');
+  if (lm && lv) {
+    const mn = Math.floor((Date.now() - mulaiMs(lv)) / 60000) + 1;
+    lm.textContent = mn < 1 ? 'Pra-pertandingan' : Math.min(mn, Number((D.tv || {}).durasi) || 100) + "'";
+  }
+}
+
+/* ===== notifikasi gol ===== */
+function cekGol() {
+  const lv = cariLive();
+  if (!lv) return;
+  const h = +lv.skorHome || 0, a = +lv.skorAway || 0, p = PREV[lv.id];
+  PREV[lv.id] = { h: h, a: a };
+  if (!p) return;
+  let siapa = '';
+  if (h > p.h) siapa = K(lv.home).nama; else if (a > p.a) siapa = K(lv.away).nama;
+  if (!siapa) return;
+  $('goalTxt').textContent = siapa + '  ' + h + ' - ' + a;
+  const g = $('goal'); g.classList.add('on');
+  clearTimeout(window._g); window._g = setTimeout(() => g.classList.remove('on'), 6000);
+}
+
+/* ===== data ===== */
+function setConn() { $('conn').className = 'conn' + (OFF ? ' off' : ''); $('conn').title = OFF ? 'Koneksi terputus, mencoba lagi' : 'Terhubung'; }
+function muat(penuh) {
+  google.script.run
+    .withSuccessHandler(d => {
+      OFF = false;
+      if (penuh) d.klub.forEach(k => { LOGOS[k.id] = k.logo || ''; });
+      else d.klub.forEach(k => { k.logo = LOGOS[k.id] || ''; });
+      D = d; window.D = d;
+      setConn(); cekGol(); render(); jadwalMuat();
+    })
+    .withFailureHandler(() => { OFF = true; setConn(); jadwalMuat(); })
+    .getData(penuh ? undefined : true);
+}
+function jadwalMuat() { clearTimeout(timer); timer = setTimeout(() => muat(false), LIVE_ID ? 10000 : 30000); }
+function toggleFs() {
+  const e = document.documentElement;
+  if (!document.fullscreenElement) { (e.requestFullscreen || e.webkitRequestFullscreen || function () {}).call(e); }
+  else { (document.exitFullscreen || document.webkitExitFullscreen || function () {}).call(document); }
+}
+window.onerror = function (m) { var a = $('app'); if (a && !D) a.innerHTML = '<div class="empty">Gagal memuat: ' + esc(m) + '</div>'; };
+setInterval(tick, 1000); tick();
+muat(false);
+setTimeout(() => muat(true), 1500); // logo penuh dimuat sekali di belakang layar
 </script>
 </body>
 </html>
-
