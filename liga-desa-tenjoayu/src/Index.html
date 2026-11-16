@@ -1779,6 +1779,29 @@ function kirimGol() {
 const _as = adminSkor;
 adminSkor = function () { return (edGol ? formGol() : '') + _as(); };
 
+// ===== Pengaturan Layar TV (admin) =====
+function kartuTv() {
+  const t = D.tv || { live: 'auto', matchId: '', durasi: 100, pengumuman: '' };
+  const opts = urut(D.match.filter(m => m.status !== 'Selesai')).map(m =>
+    '<option value="' + m.id + '"' + (m.id === t.matchId ? ' selected' : '') + '>' + esc(String(m.tanggal).slice(0, 16)) + ' - ' + esc(K(m.home).nama) + ' vs ' + esc(K(m.away).nama) + '</option>').join('');
+  return '<h2>Layar TV</h2><div class="card"><div class="form">'
+    + '<label class="mut">Mode live<br><select id="tv_live">'
+    + '<option value="auto"' + (t.live === 'auto' ? ' selected' : '') + '>Otomatis (live saat jam pertandingan)</option>'
+    + '<option value="paksa"' + (t.live === 'paksa' ? ' selected' : '') + '>Paksa live pertandingan tertentu</option>'
+    + '<option value="mati"' + (t.live === 'mati' ? ' selected' : '') + '>Matikan live</option></select></label>'
+    + '<label class="mut">Pertandingan (untuk mode paksa)<br><select id="tv_match"><option value="">-</option>' + opts + '</select></label>'
+    + '<label class="mut">Durasi live (menit)<br><input id="tv_durasi" type="number" min="30" max="180" value="' + esc(t.durasi) + '"></label>'
+    + '<label class="mut">Teks berjalan (pengumuman)<br><input id="tv_info" maxlength="200" value="' + esc(t.pengumuman) + '"></label>'
+    + '</div><button class="btn" onclick="simpanTv()">Simpan pengaturan TV</button>'
+    + (APPURL ? ' <a class="btn sm" style="text-decoration:none;display:inline-block" href="' + esc(APPURL) + '?page=Tv" target="_blank">Buka Layar TV</a>' : '')
+    + '<p class="mut" style="margin-bottom:0">Perubahan tampil di layar TV dalam 10-30 detik.</p></div>';
+}
+function simpanTv() {
+  panggil('simpanTvConfig', [{ live: v('tv_live'), matchId: v('tv_match'), durasi: v('tv_durasi'), pengumuman: v('tv_info') }, PW], ok);
+}
+const _as2 = adminSkor;
+adminSkor = function () { return kartuTv() + _as2(); };
+
 // 3) bagikan ke WhatsApp
 function bagikan(t) { window.open('https://wa.me/?text=' + encodeURIComponent(t), '_blank'); }
 const tmbBagi = fn => `<button class="btn sm" style="margin-top:12px" onclick="bagikan(${fn}())">&#128228; Bagikan ke WhatsApp</button>`;
